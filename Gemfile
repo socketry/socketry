@@ -8,8 +8,9 @@ group :development do
 end
 
 group :test do
-  gem "rspec", "~> 3"
-  gem "rubocop"
+  gem "rspec", "~> 3", require: false
+  gem "rubocop", "0.41.1", require: false
+  gem "coveralls", require: false
 end
 
 group :development, :test do
