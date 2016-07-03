@@ -1,5 +1,11 @@
 # Socketry
 
+[![Gem Version](https://badge.fury.io/rb/socketry.svg)](https://rubygems.org/gems/socketry)
+[![Build Status](https://secure.travis-ci.org/celluloid/socketry.svg?branch=master)](https://travis-ci.org/celluloid/socketry)
+[![Code Climate](https://codeclimate.com/github/celluloid/socketry.svg?branch=master)](https://codeclimate.com/github/celluloid/socketry)
+[![Coverage Status](https://coveralls.io/repos/celluloid/socketry/badge.svg?branch=master)](https://coveralls.io/r/celluloid/socketry)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/celluloid/socketry/blob/master/LICENSE.txt)
+
 High-level wrappers for Ruby sockets with advanced thread-safe timeout support.
 
 ## Installation
