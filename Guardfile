@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 directories %w(lib spec)
 clearing :on
 
