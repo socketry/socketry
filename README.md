@@ -1,10 +1,15 @@
-# Socketry
+# Socketry [![Gem Version][gem-image]][gem-link] [![Build Status][build-image]][build-link] [![Code Climate][codeclimate-image]][codeclimate-link] [![Coverage Status][coverage-image]][coverage-link] [![MIT licensed][license-image]][license-link]
 
-[![Gem Version](https://badge.fury.io/rb/socketry.svg)](https://rubygems.org/gems/socketry)
-[![Build Status](https://secure.travis-ci.org/celluloid/socketry.svg?branch=master)](https://travis-ci.org/celluloid/socketry)
-[![Code Climate](https://codeclimate.com/github/celluloid/socketry.svg?branch=master)](https://codeclimate.com/github/celluloid/socketry)
-[![Coverage Status](https://coveralls.io/repos/github/celluloid/socketry/badge.svg?branch=master)](https://coveralls.io/github/celluloid/socketry?branch=master)
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/celluloid/socketry/blob/master/LICENSE.txt)
+[gem-image]: https://badge.fury.io/rb/socketry.svg
+[gem-link]: https://rubygems.org/gems/socketry
+[build-image]: https://secure.travis-ci.org/celluloid/socketry.svg?branch=master
+[build-link]: https://codeclimate.com/github/celluloid/socketry
+[codeclimate-image]: https://codeclimate.com/github/celluloid/socketry.svg?branch=master
+[codeclimate-link]: https://codeclimate.com/github/celluloid/socketry
+[coverage-image]: https://coveralls.io/repos/github/celluloid/socketry/badge.svg?branch=master
+[coverage-link]: https://coveralls.io/github/celluloid/socketry?branch=master
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg
+[license-link]: https://github.com/celluloid/socketry/blob/master/LICENSE.txt
 
 High-level wrappers for Ruby sockets with advanced thread-safe timeout support.
 
