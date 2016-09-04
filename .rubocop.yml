@@ -22,7 +22,10 @@ Style/ConditionalAssignment:
 #
 
 Metrics/MethodLength:
-  Max: 20
+  Max: 50
+
+Metrcs/ClassLength:
+  Max: 200
 
 Metrics/AbcSize:
   Max: 20
