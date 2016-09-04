@@ -55,11 +55,16 @@ module Socketry
         socket.bind Addrinfo.tcp(local_addr.to_s, local_port) if local_addr
         remote_sockaddr = ::Socket.sockaddr_in(remote_port, remote_addr.to_s)
 
-        while socket.connect_nonblock(remote_sockaddr, exception: false) == :wait_writable
-          next if socket.wait_writable(@connect_timeout)
+        # Note: `exception: false` for Socket#connect_nonblock is only supported in Ruby 2.3+
+        begin
+          socket.connect_nonblock(remote_sockaddr)
+        rescue Errno::EINPROGRESS, Errno::EALREADY
+          retry if socket.wait_writable(@connect_timeout)
 
           socket.close
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
+        rescue Errno::EISCONN
+          # Sometimes raised when we've connected successfully
         end
 
         @socket = socket
@@ -115,9 +120,9 @@ module Socketry
       def close
         return false unless connected?
         @socket.close
+        true
       ensure
         @socket = nil
-        true
       end
 
       def connected?

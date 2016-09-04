@@ -38,3 +38,10 @@ Metrics/CyclomaticComplexity:
 
 Metrics/PerceivedComplexity:
   Max: 10
+
+#
+# Lint
+#
+
+Lint/HandleExceptions:
+  Enabled: false
