@@ -18,8 +18,7 @@ module Socketry
 
       def connect(remote_addr, remote_port, local_addr: nil, local_port: nil, verify_hostname: true)
         super(remote_addr, remote_port, local_addr: local_addr, local_port: local_port)
-        from_socket(@socket, remote_addr)
-        @ssl_socket.post_connection_check(remote_addr) if verify_hostname
+        from_socket(@socket, hostname: remote_addr, verify_hostname: verify_hostname)
         true
       rescue => ex
         @socket.close rescue nil
@@ -28,7 +27,7 @@ module Socketry
         raise ex
       end
 
-      def from_socket(socket, hostname = nil)
+      def from_socket(socket, hostname:, verify_hostname: true)
         raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
         raise StateError, "already connected" if @socket && @socket != socket
 
@@ -45,6 +44,11 @@ module Socketry
         rescue IO::WaitWritable
           retry if @socket.wait_writable(connect_timeout)
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
+        end
+
+        if verify_hostname
+          raise ArgumentError, "verify_hostname is true but no hostname given" unless hostname
+          @ssl_socket.post_connection_check(hostname)
         end
 
         true
