@@ -3,9 +3,9 @@ module Socketry
   module Timeout
     # Default timeouts (in seconds)
     DEFAULTS = {
-      read:    0.25,
-      write:   0.25,
-      connect: 0.25
+      read:    5,
+      write:   5,
+      connect: 5
     }.freeze
   end
 end

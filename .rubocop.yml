@@ -17,6 +17,9 @@ Style/SpaceBeforeFirstArg:
 Style/ConditionalAssignment:
   Enabled: false
 
+Style/RescueModifier:
+  Enabled: false
+
 #
 # Metrics
 #
@@ -24,11 +27,14 @@ Style/ConditionalAssignment:
 Metrics/MethodLength:
   Max: 50
 
-Metrcs/ClassLength:
+Metrics/ClassLength:
   Max: 200
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 25
 
 Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
   Max: 10

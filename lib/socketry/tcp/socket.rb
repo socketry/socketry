@@ -12,8 +12,8 @@ module Socketry
         read_timeout: Socketry::Timeout::DEFAULTS[:read],
         write_timeout: Socketry::Timeout::DEFAULTS[:write],
         connect_timeout: Socketry::Timeout::DEFAULTS[:connect],
-        socket_class: ::Socket,
-        resolver: Socketry::Resolver::System
+        resolver: Socketry::Resolver::System,
+        socket_class: ::Socket
       )
         @read_timeout = read_timeout
         @write_timeout = write_timeout
@@ -22,7 +22,6 @@ module Socketry
         @socket_class = socket_class
         @resolver = resolver
 
-        @state = :disconnected
         @family = nil
         @socket = nil
 
@@ -54,19 +53,17 @@ module Socketry
 
         socket = @socket_class.new(@family, ::Socket::SOCK_STREAM, 0)
         socket.bind Addrinfo.tcp(local_addr.to_s, local_port) if local_addr
+        remote_sockaddr = ::Socket.sockaddr_in(remote_port, remote_addr.to_s)
 
-        begin
-          socket.connect_nonblock ::Socket.sockaddr_in(remote_port, remote_addr.to_s)
-        rescue Errno::EINPROGRESS, Errno::EALREADY
-          retry if socket.wait_writable(@connect_timeout)
+        while socket.connect_nonblock(remote_sockaddr, exception: false) == :wait_writable
+          next if socket.wait_writable(@connect_timeout)
+
+          socket.close
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
-        rescue Errno::EISCONN
-          # This "exception" (perhaps surprisingly) indicates we've connected successfully
-          @socket = socket
-          @state  = :connected
-
-          true
         end
+
+        @socket = socket
+        true
       end
 
       def reconnect
@@ -81,8 +78,6 @@ module Socketry
 
         raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
         @socket = socket
-        @state  = :connected
-
         true
       end
 
@@ -118,23 +113,26 @@ module Socketry
       end
 
       def close
-        return false if @state == :disconnected
+        return false unless connected?
         @socket.close
       ensure
-        @state  = :disconnected
         @socket = nil
         true
+      end
+
+      def connected?
+        @socket != nil
       end
 
       private
 
       def ensure_connected
-        return true if @state == :connected
+        return true if connected?
         raise StateError, "not connected"
       end
 
       def ensure_disconnected
-        return true if @state == :disconnected
+        return true unless connected?
         raise StateError, "already connected"
       end
     end
