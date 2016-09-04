@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
+require "ipaddr"
 require "socket"
 
 require "socketry/version"
 
 require "socketry/exceptions"
-require "socketry/resolver"
 require "socketry/resolver/resolv"
 require "socketry/resolver/system"
 require "socketry/timeout/null"

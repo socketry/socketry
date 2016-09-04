@@ -10,8 +10,7 @@ RSpec.describe Socketry::Resolver::Resolv, online: true do
 
     it "resolves DNS requests to Resolv addresses" do
       %w(localhost travis-ci.org).each do |hostname|
-        result = resolver.resolve(hostname)
-        expect([Resolv::IPv4, Resolv::IPv6]).to include(result.class)
+        expect(resolver.resolve(hostname)).to be_a IPAddr
       end
     end
   end

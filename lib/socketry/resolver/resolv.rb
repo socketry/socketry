@@ -20,7 +20,7 @@ module Socketry
 
       def resolve(hostname, timeout: nil)
         raise TypeError, "expected String, got #{hostname.class}" unless hostname.is_a?(String)
-        return Socketry::Resolver.addr(@hosts.getaddress(hostname).sub(/%.*$/, ""))
+        return IPAddr.new(@hosts.getaddress(hostname).sub(/%.*$/, ""))
       rescue ::Resolv::ResolvError
         case timeout
         when Integer, Float
@@ -31,9 +31,9 @@ module Socketry
         end
 
         begin
-          @resolver.getaddress(hostname)
+          IPAddr.new(@resolver.getaddress(hostname).to_s)
         rescue ::Resolv::ResolvError => ex
-          raise Resolver::Error, ex.message, ex.backtrace
+          raise Socketry::Resolver::Error, ex.message, ex.backtrace
         rescue ::Resolv::ResolvTimeout => ex
           raise Socketry::TimeoutError, ex.message, ex.backtrace
         end
