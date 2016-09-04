@@ -14,6 +14,7 @@ module Socketry
         begin
           case timeout
           when Integer, Float
+            # NOTE: ::Timeout is not thread safe. For thread safety, use Socketry::Resolver::Resolv
             result = ::Timeout.timeout(timeout) { IPSocket.getaddress(hostname) }
           when NilClass
             result = IPSocket.getaddress(hostname)
@@ -25,7 +26,11 @@ module Socketry
           raise Socketry::TimeoutError, ex.message, ex.backtrace
         end
 
-        Socketry::Resolver.addr(result)
+        begin
+          IPAddr.new(result)
+        rescue IPAddr::InvalidAddressError => ex
+          raise Socketry::AddressError, ex.message, ex.backtrace
+        end
       end
     end
   end

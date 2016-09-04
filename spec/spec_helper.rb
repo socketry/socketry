@@ -15,8 +15,7 @@ RSpec.shared_examples "Socketry DNS resolver" do
 
   it "resolves DNS requests to Resolv addresses" do
     [hosts_file_example, valid_dns_example].each do |hostname|
-      result = described_class.resolve(hostname, timeout: 5)
-      expect([Resolv::IPv4, Resolv::IPv6]).to include(result.class)
+      expect(described_class.resolve(hostname, timeout: 5)).to be_a IPAddr
     end
   end
 
