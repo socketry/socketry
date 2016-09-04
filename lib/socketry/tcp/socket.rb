@@ -59,7 +59,8 @@ module Socketry
         begin
           socket.connect_nonblock(remote_sockaddr)
         rescue Errno::EINPROGRESS, Errno::EALREADY
-          retry if socket.wait_writable(@connect_timeout)
+          # JRuby does not seem to correctly support Socket#wait_writable in this case
+          retry if IO.select(nil, [socket], nil, @connect_timeout)
 
           socket.close
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
@@ -104,12 +105,12 @@ module Socketry
 
       def nodelay
         ensure_connected
-        @socket.getsockopt(:TCP, :NODELAY).int != 0
+        @socket.getsockopt(::Socket::IPPROTO_TCP, ::Socket::TCP_NODELAY).int != 0
       end
 
       def nodelay=(flag)
         ensure_connected
-        @socket.setsockopt(:TCP, :NODELAY, flag ? 1 : 0)
+        @socket.setsockopt(::Socket::IPPROTO_TCP, ::Socket::TCP_NODELAY, flag ? 1 : 0)
       end
 
       def to_io

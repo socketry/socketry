@@ -73,6 +73,9 @@ RSpec.describe Socketry::TCP::Socket do
 
   context "flags" do
     it "gets and sets the TCP_NODELAY flag (i.e. Nagle's algorithm)" do
+      # Though the setter for nodelay works on JRuby, the getter does not
+      skip if defined?(JRUBY_VERSION)
+
       expect(tcp_socket.nodelay).to eq false
 
       tcp_socket.nodelay = true
