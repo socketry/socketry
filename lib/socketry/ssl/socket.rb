@@ -12,22 +12,34 @@ module Socketry
         @ssl_socket_class = ssl_socket_class
         @ssl_context = OpenSSL::SSL::SSLContext.new
         @ssl_context.set_params(ssl_params) if ssl_params
-
         @ssl_socket = nil
       end
 
-      def connect(remote_addr, remote_port, local_addr: nil, local_port: nil, verify_hostname: true)
-        super(remote_addr, remote_port, local_addr: local_addr, local_port: local_port)
+      def connect(
+        remote_addr,
+        remote_port,
+        local_addr: nil,
+        local_port: nil,
+        timeout: Socketry::Timeout::DEFAULTS[:connect],
+        verify_hostname: true
+      )
+        super(remote_addr, remote_port, local_addr: local_addr, local_port: local_port, timeout: timeout)
         from_socket(@socket, hostname: remote_addr, verify_hostname: verify_hostname)
         true
       rescue => ex
         @socket.close rescue nil
         @socket = nil
+        @ssl_socket.close rescue nil
         @ssl_socket = nil
         raise ex
       end
 
-      def from_socket(socket, hostname:, verify_hostname: true)
+      def from_socket(
+        socket,
+        hostname:,
+        timeout: Socketry::Timeout::DEFAULTS[:connect],
+        verify_hostname: true
+      )
         raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
         raise StateError, "already connected" if @socket && @socket != socket
 
@@ -39,10 +51,10 @@ module Socketry
         begin
           @ssl_socket.connect_nonblock
         rescue IO::WaitReadable
-          retry if @socket.wait_readable(connect_timeout)
+          retry if @socket.wait_readable(timeout)
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
         rescue IO::WaitWritable
-          retry if @socket.wait_writable(connect_timeout)
+          retry if @socket.wait_writable(timeout)
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
         end
 
@@ -57,17 +69,23 @@ module Socketry
       def read_nonblock(size)
         ensure_connected
         @ssl_socket.read_nonblock(size, exception: false)
+      # Some buggy Rubies continue to raise exceptions in these cases
       rescue IO::WaitReadable
-        # Some buggy Rubies continue to raise this exception
         :wait_readable
+      # Due to SSL, we may need to write to complete a read (e.g. renegotiation)
+      rescue IO::WaitWritable
+        :wait_writable
       end
 
       def write_nonblock(data)
         ensure_connected
         @ssl_socket.write_nonblock(data, exception: false)
+      # Some buggy Rubies continue to raise this exception
       rescue IO::WaitWriteable
-        # Some buggy Rubies continue to raise this exception
         :wait_writable
+      # Due to SSL, we may need to write to complete a read (e.g. renegotiation)
+      rescue IO::WaitReadable
+        :wait_readable
       end
 
       def close

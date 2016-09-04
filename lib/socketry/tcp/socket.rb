@@ -5,19 +5,17 @@ module Socketry
   module TCP
     # Transmission Control Protocol sockets: Provide stream-like semantics
     class Socket
-      attr_reader :read_timeout, :write_timeout, :connect_timeout
       attr_reader :remote_addr, :remote_port, :local_addr, :local_port
+      attr_reader :read_timeout, :write_timeout
 
       def initialize(
         read_timeout: Socketry::Timeout::DEFAULTS[:read],
         write_timeout: Socketry::Timeout::DEFAULTS[:write],
-        connect_timeout: Socketry::Timeout::DEFAULTS[:connect],
         resolver: Socketry::Resolver::System,
         socket_class: ::Socket
       )
         @read_timeout = read_timeout
         @write_timeout = write_timeout
-        @connect_timeout = connect_timeout
 
         @socket_class = socket_class
         @resolver = resolver
@@ -31,7 +29,13 @@ module Socketry
         @local_port  = nil
       end
 
-      def connect(remote_addr, remote_port, local_addr: nil, local_port: nil)
+      def connect(
+        remote_addr,
+        remote_port,
+        local_addr: nil,
+        local_port: nil,
+        timeout: Socketry::Timeout::DEFAULTS[:connect]
+      )
         ensure_disconnected
 
         @remote_addr = remote_addr
@@ -39,8 +43,8 @@ module Socketry
         @local_addr  = local_addr
         @local_port  = local_port
 
-        remote_addr = @resolver.resolve(remote_addr, timeout: @connect_timeout)
-        local_addr  = @resolver.resolve(local_addr,  timeout: @connect_timeout) if local_addr
+        remote_addr = @resolver.resolve(remote_addr, timeout: timeout)
+        local_addr  = @resolver.resolve(local_addr,  timeout: timeout) if local_addr
 
         raise ArgumentError, "expected IPAddr from resolver, got #{remote_addr.class}" unless remote_addr.is_a?(IPAddr)
 
@@ -60,7 +64,7 @@ module Socketry
           socket.connect_nonblock(remote_sockaddr)
         rescue Errno::EINPROGRESS, Errno::EALREADY
           # JRuby does not seem to correctly support Socket#wait_writable in this case
-          retry if IO.select(nil, [socket], nil, @connect_timeout)
+          retry if IO.select(nil, [socket], nil, timeout)
 
           socket.close
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
@@ -72,16 +76,14 @@ module Socketry
         true
       end
 
-      def reconnect
+      def reconnect(timeout: Socketry::Timeout::DEFAULTS[:connect])
         ensure_disconnected
         raise StateError, "can't reconnect: never completed initial connection" unless @remote_addr
-
-        connect(@remote_addr, @remote_port, local_addr: @local_addr, local_port: @local_port)
+        connect(@remote_addr, @remote_port, local_addr: @local_addr, local_port: @local_port, timeout: timeout)
       end
 
       def from_socket(socket)
         ensure_disconnected
-
         raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
         @socket = socket
         true

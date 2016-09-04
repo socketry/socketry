@@ -39,6 +39,9 @@ Metrics/CyclomaticComplexity:
 Metrics/PerceivedComplexity:
   Max: 10
 
+Metrics/ParameterLists:
+  Enabled: false
+
 #
 # Lint
 #
