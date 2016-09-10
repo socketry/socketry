@@ -16,6 +16,7 @@ require "socketry/timeout/null"
 require "socketry/timeout/per_operation"
 require "socketry/timeout/global"
 
-require "socketry/tcp/socket"
 require "socketry/tcp/server"
+require "socketry/tcp/socket"
+require "socketry/ssl/server"
 require "socketry/ssl/socket"

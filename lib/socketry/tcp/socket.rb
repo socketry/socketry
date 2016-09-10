@@ -107,7 +107,7 @@ module Socketry
 
       def nodelay
         ensure_connected
-        @socket.getsockopt(::Socket::IPPROTO_TCP, ::Socket::TCP_NODELAY).int != 0
+        @socket.getsockopt(::Socket::IPPROTO_TCP, ::Socket::TCP_NODELAY).int.nonzero?
       end
 
       def nodelay=(flag)

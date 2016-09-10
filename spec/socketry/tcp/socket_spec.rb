@@ -76,13 +76,13 @@ RSpec.describe Socketry::TCP::Socket do
       # Though the setter for nodelay works on JRuby, the getter does not
       skip if defined?(JRUBY_VERSION)
 
-      expect(tcp_socket.nodelay).to eq false
+      expect(tcp_socket.nodelay).to be_falsey
 
       tcp_socket.nodelay = true
-      expect(tcp_socket.nodelay).to eq true
+      expect(tcp_socket.nodelay).to be_truthy
 
       tcp_socket.nodelay = false
-      expect(tcp_socket.nodelay).to eq false
+      expect(tcp_socket.nodelay).to be_falsey
     end
   end
 end

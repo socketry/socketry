@@ -13,6 +13,9 @@ module Socketry
   # Cannot perform operation in current state
   StateError = Class.new(Error)
 
+  # Errors related to SSL
+  SslError = Class.new(Error)
+
   module Resolver
     # DNS resolution errors
     Error = Class.new(AddressError)

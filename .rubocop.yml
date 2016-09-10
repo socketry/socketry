@@ -48,3 +48,6 @@ Metrics/ParameterLists:
 
 Lint/HandleExceptions:
   Enabled: false
+
+Lint/ShadowedException:
+  Enabled: false
