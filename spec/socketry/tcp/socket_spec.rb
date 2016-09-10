@@ -21,21 +21,21 @@ RSpec.describe Socketry::TCP::Socket do
 
   describe "#connect" do
     it "connects to TCP servers" do
-      expect(described_class.new.connect(remote_host, remote_port)).to eq true
+      expect(described_class.new.connect(remote_host, remote_port)).to be_a described_class
     end
   end
 
   describe "#reconnect" do
     it "reconnects after closing a connection" do
       tcp_socket.close
-      expect(tcp_socket.reconnect).to eq true
+      expect(tcp_socket.reconnect).to be_a described_class
     end
   end
 
   describe "#from_socket" do
     it "creates from an existing Ruby TCPSocket" do
       socket = described_class.new(socket_class: TCPSocket)
-      expect(socket.from_socket(TCPSocket.new(remote_host, remote_port))).to eq true
+      expect(socket.from_socket(TCPSocket.new(remote_host, remote_port))).to be_a described_class
     end
   end
 

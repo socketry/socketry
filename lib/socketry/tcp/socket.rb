@@ -6,7 +6,7 @@ module Socketry
     # Transmission Control Protocol sockets: Provide stream-like semantics
     class Socket
       attr_reader :remote_addr, :remote_port, :local_addr, :local_port
-      attr_reader :read_timeout, :write_timeout
+      attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
 
       def initialize(
         read_timeout: Socketry::Timeout::DEFAULTS[:read],
@@ -73,7 +73,7 @@ module Socketry
         end
 
         @socket = socket
-        true
+        self
       end
 
       def reconnect(timeout: Socketry::Timeout::DEFAULTS[:connect])
@@ -86,7 +86,7 @@ module Socketry
         ensure_disconnected
         raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
         @socket = socket
-        true
+        self
       end
 
       def read_nonblock(size)
