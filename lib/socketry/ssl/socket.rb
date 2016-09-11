@@ -39,10 +39,15 @@ module Socketry
           retry if @socket.wait_writable(timeout)
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
         rescue OpenSSL::SSL::SSLError => ex
-          raise Socketry::SslError, ex.message, ex.backtrace
+          raise Socketry::SSL::Error, ex.message, ex.backtrace
         end
 
-        @ssl_socket.post_connection_check(remote_addr) if verify_hostname
+        begin
+          @ssl_socket.post_connection_check(remote_addr) if verify_hostname
+        rescue OpenSSL::SSL::SSLError => ex
+          raise Socketry::SSL::HostnameError, ex.message, ex.backtrace
+        end
+
         self
       rescue => ex
         @socket.close rescue nil
