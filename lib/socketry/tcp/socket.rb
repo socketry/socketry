@@ -52,36 +52,42 @@ module Socketry
         @local_addr  = local_addr
         @local_port  = local_port
 
-        remote_addr = @resolver.resolve(remote_addr, timeout: timeout)
-        local_addr  = @resolver.resolve(local_addr,  timeout: timeout) if local_addr
-
-        raise ArgumentError, "expected IPAddr from resolver, got #{remote_addr.class}" unless remote_addr.is_a?(IPAddr)
-
-        if remote_addr.ipv4?
-          @family = ::Socket::AF_INET
-        elsif remote_addr.ipv6?
-          @family = ::Socket::AF_INET6
-        else raise Socketry::AddressError, "unsupported IP address family: #{remote_addr}"
-        end
-
-        socket = @socket_class.new(@family, ::Socket::SOCK_STREAM, 0)
-        socket.bind Addrinfo.tcp(local_addr.to_s, local_port) if local_addr
-        remote_sockaddr = ::Socket.sockaddr_in(remote_port, remote_addr.to_s)
-
-        # Note: `exception: false` for Socket#connect_nonblock is only supported in Ruby 2.3+
         begin
-          socket.connect_nonblock(remote_sockaddr)
-        rescue Errno::EINPROGRESS, Errno::EALREADY
-          # JRuby does not seem to correctly support Socket#wait_writable in this case
-          retry if IO.select(nil, [socket], nil, timeout)
+          set_timeout(timeout)
 
-          socket.close
-          raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
-        rescue Errno::EISCONN
-          # Sometimes raised when we've connected successfully
+          remote_addr = @resolver.resolve(remote_addr, timeout: time_remaining(timeout))
+          local_addr  = @resolver.resolve(local_addr,  timeout: time_remaining(timeout)) if local_addr
+          raise ArgumentError, "expected IPAddr from resolver, got #{remote_addr.class}" unless remote_addr.is_a?(IPAddr)
+
+          if remote_addr.ipv4?
+            @family = ::Socket::AF_INET
+          elsif remote_addr.ipv6?
+            @family = ::Socket::AF_INET6
+          else raise Socketry::AddressError, "unsupported IP address family: #{remote_addr}"
+          end
+
+          socket = @socket_class.new(@family, ::Socket::SOCK_STREAM, 0)
+          socket.bind Addrinfo.tcp(local_addr.to_s, local_port) if local_addr
+          remote_sockaddr = ::Socket.sockaddr_in(remote_port, remote_addr.to_s)
+
+          # Note: `exception: false` for Socket#connect_nonblock is only supported in Ruby 2.3+
+          begin
+            socket.connect_nonblock(remote_sockaddr)
+          rescue Errno::EINPROGRESS, Errno::EALREADY
+            # JRuby does not seem to correctly support Socket#wait_writable in this case
+            retry if IO.select(nil, [socket], nil, time_remaining(timeout))
+
+            socket.close
+            raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
+          rescue Errno::EISCONN
+            # Sometimes raised when we've connected successfully
+          end
+
+          @socket = socket
+        ensure
+          clear_timeout(timeout)
         end
 
-        @socket = socket
         self
       end
 

@@ -8,10 +8,7 @@ AllCops:
 LineLength:
   Max: 128
 
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/SpaceBeforeFirstArg:
+Style/AccessorMethodName:
   Enabled: false
 
 Style/ConditionalAssignment:
@@ -20,27 +17,33 @@ Style/ConditionalAssignment:
 Style/RescueModifier:
   Enabled: false
 
+Style/SpaceBeforeFirstArg:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
 #
 # Metrics
 #
 
-Metrics/MethodLength:
+Metrics/AbcSize:
   Max: 50
 
 Metrics/ClassLength:
   Max: 200
 
-Metrics/AbcSize:
-  Max: 25
-
 Metrics/CyclomaticComplexity:
   Max: 10
 
-Metrics/PerceivedComplexity:
-  Max: 10
+Metrics/MethodLength:
+  Max: 50
 
 Metrics/ParameterLists:
   Enabled: false
+
+Metrics/PerceivedComplexity:
+  Max: 10
 
 #
 # Lint

@@ -79,9 +79,15 @@ module Socketry
       end
 
       def recvfrom(maxlen)
-        while (result = recvfrom_nonblock(maxlen)) == :wait_readable
-          next if @socket.wait_readable(@read_timeout)
-          raise Socketry::TimeoutError, "recvfrom timed out after #{@read_timeout} seconds"
+        set_timeout(@read_timeout)
+
+        begin
+          while (result = recvfrom_nonblock(maxlen)) == :wait_readable
+            next if @socket.wait_readable(time_remaining(@read_timeout))
+            raise Socketry::TimeoutError, "recvfrom timed out after #{@read_timeout} seconds"
+          end
+        ensure
+          clear_timeout(@read_timeout)
         end
 
         result
