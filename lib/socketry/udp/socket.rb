@@ -31,7 +31,7 @@ module Socketry
         family: :ipv4,
         read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
         write_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:write],
-        timer_class: Socketry::Timeout::DEFAULT_TIMER,
+        timer: Socketry::Timeout::DEFAULT_TIMER.new,
         resolver: Socketry::Resolver::DEFAULT_RESOLVER,
         socket_class: ::UDPSocket
       )
@@ -50,7 +50,7 @@ module Socketry
         @write_timeout = write_timeout
         @resolver      = resolver
 
-        start_timer(timer_class: timer_class)
+        start_timer(timer)
       end
 
       def bind(remote_addr, remote_port)
