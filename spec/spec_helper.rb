@@ -12,6 +12,7 @@ RSpec.shared_examples "Socketry DNS resolver" do
   let(:hosts_file_example) { "localhost" }
   let(:valid_dns_example)  { "travis-ci.org" }
   let(:invalid_example)    { "this is clearly not a valid DNS address, right?" }
+  let(:invalid_timeout)    { "I'm not really a timeout" }
 
   it "resolves DNS requests to Resolv addresses" do
     [hosts_file_example, valid_dns_example].each do |hostname|
@@ -21,5 +22,9 @@ RSpec.shared_examples "Socketry DNS resolver" do
 
   it "raises Socketry::Resolver::Error if given an invalid address" do
     expect { described_class.resolve(invalid_example) }.to raise_error(Socketry::Resolver::Error)
+  end
+
+  it "raises TypeError if given a bogus timeout object" do
+    expect { described_class.resolve(valid_dns_example, timeout: invalid_timeout) }.to raise_error(TypeError)
   end
 end
