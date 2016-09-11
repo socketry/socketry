@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "forwardable"
 require "io/wait"
 require "ipaddr"
 require "socket"
@@ -17,3 +16,4 @@ require "socketry/tcp/server"
 require "socketry/tcp/socket"
 require "socketry/ssl/server"
 require "socketry/ssl/socket"
+require "socketry/udp/socket"
