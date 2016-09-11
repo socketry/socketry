@@ -13,6 +13,9 @@ module Socketry
   # Cannot perform operation in current state
   StateError = Class.new(Socketry::Error)
 
+  # Internal consistency error within the library
+  InternalError = Class.new(Socketry::Error)
+
   module Resolver
     # DNS resolution errors
     Error = Class.new(Socketry::AddressError)
