@@ -22,7 +22,7 @@ module Socketry
         remote_port,
         local_addr: nil,
         local_port: nil,
-        timeout: Socketry::Timeout::DEFAULTS[:connect],
+        timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:connect],
         verify_hostname: true
       )
         super(remote_addr, remote_port, local_addr: local_addr, local_port: local_port, timeout: timeout)

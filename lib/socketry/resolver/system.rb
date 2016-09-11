@@ -33,5 +33,8 @@ module Socketry
         end
       end
     end
+
+    # Use Socketry::Resolver::System as the default resolver
+    DEFAULT_RESOLVER = System
   end
 end

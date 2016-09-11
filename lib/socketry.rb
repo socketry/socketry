@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
+# Ruby stdlib dependencies
 require "io/wait"
 require "ipaddr"
 require "socket"
 require "openssl"
 
+# External gems
+require "hitimes"
+
+# Socketry codebase
 require "socketry/version"
 
 require "socketry/exceptions"

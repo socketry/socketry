@@ -5,6 +5,9 @@ module Socketry
   module TCP
     # Transmission Control Protocol servers: Accept connections from the network
     class Server
+      include Socketry::Timeout
+      alias uptime lifetime
+
       attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
 
       def self.open(hostname_or_port, port = nil, **args)
@@ -17,9 +20,10 @@ module Socketry
       def initialize(
         hostname_or_port,
         port = nil,
-        read_timeout: Socketry::Timeout::DEFAULTS[:read],
-        write_timeout: Socketry::Timeout::DEFAULTS[:write],
-        resolver: Socketry::Resolver::System,
+        read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
+        write_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:write],
+        timer_class: Socketry::Timeout::DEFAULT_TIMER,
+        resolver: Socketry::Resolver::DEFAULT_RESOLVER,
         server_class: ::TCPServer,
         socket_class: ::TCPSocket
       )
@@ -33,6 +37,8 @@ module Socketry
         else
           @server = server_class.new(hostname_or_port)
         end
+
+        start_timer(timer_class: timer_class)
       end
 
       def accept(timeout: nil)

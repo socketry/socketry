@@ -5,16 +5,37 @@ module Socketry
   module UDP
     # User Datagram Protocol sockets
     class Socket
+      include Socketry::Timeout
+
       attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
 
+      def self.from_addr(remote_addr, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
+        addr = resolver.resolve(remote_addr)
+        if addr.ipv4?
+          new(family: :ipv4)
+        elsif addr.ipv6?
+          new(family: :ipv6)
+        else raise Socketry::AddressError, "unsupported IP address family: #{addr}"
+        end
+      end
+
+      def self.bind(remote_addr, remote_port, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
+        from_addr(remote_addr, resolver: resolver).bind(remote_addr, remote_port)
+      end
+
+      def self.connect(remote_addr, remote_port, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
+        from_addr(remote_addr, resolver: resolver).connect(remote_addr, remote_port)
+      end
+
       def initialize(
-        address_family: :ipv4,
-        read_timeout: Socketry::Timeout::DEFAULTS[:read],
-        write_timeout: Socketry::Timeout::DEFAULTS[:write],
-        resolver: Socketry::Resolver::System,
+        family: :ipv4,
+        read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
+        write_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:write],
+        timer_class: Socketry::Timeout::DEFAULT_TIMER,
+        resolver: Socketry::Resolver::DEFAULT_RESOLVER,
         socket_class: ::UDPSocket
       )
-        case address_family
+        case family
         when :ipv4
           @address_family = ::Socket::AF_INET
         when :ipv6
@@ -28,6 +49,8 @@ module Socketry
         @read_timeout  = read_timeout
         @write_timeout = write_timeout
         @resolver      = resolver
+
+        start_timer(timer_class: timer_class)
       end
 
       def bind(remote_addr, remote_port)

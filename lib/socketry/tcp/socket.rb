@@ -5,13 +5,20 @@ module Socketry
   module TCP
     # Transmission Control Protocol sockets: Provide stream-like semantics
     class Socket
+      include Socketry::Timeout
+
       attr_reader :remote_addr, :remote_port, :local_addr, :local_port
       attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
 
+      def self.connect(remote_addr, remote_port, **args)
+        new.connect(remote_addr, remote_port, **args)
+      end
+
       def initialize(
-        read_timeout: Socketry::Timeout::DEFAULTS[:read],
-        write_timeout: Socketry::Timeout::DEFAULTS[:write],
-        resolver: Socketry::Resolver::System,
+        read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
+        write_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:write],
+        timer_class: Socketry::Timeout::DEFAULT_TIMER,
+        resolver: Socketry::Resolver::DEFAULT_RESOLVER,
         socket_class: ::Socket
       )
         @read_timeout = read_timeout
@@ -27,6 +34,8 @@ module Socketry
         @remote_port = nil
         @local_addr  = nil
         @local_port  = nil
+
+        start_timer(timer_class: timer_class)
       end
 
       def connect(
@@ -34,7 +43,7 @@ module Socketry
         remote_port,
         local_addr: nil,
         local_port: nil,
-        timeout: Socketry::Timeout::DEFAULTS[:connect]
+        timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:connect]
       )
         ensure_disconnected
 
@@ -76,7 +85,7 @@ module Socketry
         self
       end
 
-      def reconnect(timeout: Socketry::Timeout::DEFAULTS[:connect])
+      def reconnect(timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:connect])
         ensure_disconnected
         raise StateError, "can't reconnect: never completed initial connection" unless @remote_addr
         connect(@remote_addr, @remote_port, local_addr: @local_addr, local_port: @local_port, timeout: timeout)
