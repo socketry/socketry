@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "timeout"
-require "io/wait"
 
 require "socketry/timeout/per_operation"
 

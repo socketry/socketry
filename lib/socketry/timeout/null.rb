@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require "forwardable"
-require "io/wait"
-
 module Socketry
   module Timeout
     # Timeout-free operation
