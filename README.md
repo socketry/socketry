@@ -48,7 +48,7 @@ TODO: Coming soon!
 
 ## License
 
-Copyright (c) 2015-2016 Tony Arcieri, Zachary Anker.
+Copyright (c) 2016 Tony Arcieri
 
 Distributed under the MIT License. See
 [LICENSE.txt](https://github.com/celluloid/socketry/blob/master/LICENSE.txt)
