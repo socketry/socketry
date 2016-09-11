@@ -10,10 +10,24 @@ module Socketry
       attr_reader :remote_addr, :remote_port, :local_addr, :local_port
       attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
 
+      # Create a Socketry::TCP::Socket with the default options, then connect
+      # to the given host.
+      #
+      # @param remote_addr [String] DNS name or IP address of the host to connect to
+      # @param remote_port [Fixnum] TCP port to connect to
+      # @return [Socketry::TCP::Socket]
       def self.connect(remote_addr, remote_port, **args)
         new.connect(remote_addr, remote_port, **args)
       end
 
+      # Create an unconnected Socketry::TCP::Socket
+      #
+      # @param read_timeout  [Numeric] Seconds to wait before an uncompleted read errors
+      # @param write_timeout [Numeric] Seconds to wait before an uncompleted write errors
+      # @param timer         [Object]  A timekeeping object to use for measuring timeouts
+      # @param resolver      [Object]  A resolver object to use for resolving DNS names
+      # @param socket_class  [Object]  Underlying socket class which implements I/O ops
+      # @return [Socketry::TCP::Socket]
       def initialize(
         read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
         write_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:write],
@@ -38,6 +52,17 @@ module Socketry
         start_timer(timer)
       end
 
+      # Connect to a remote host
+      #
+      # @param remote_addr  [String]  DNS name or IP address of the host to connect to
+      # @param remote_port  [Fixnum]  TCP port to connect to
+      # @param local_addr   [String]  DNS name or IP address to bind to locally
+      # @param local_port   [Fixnum]  Local TCP port to bind to
+      # @param timeout      [Numeric] Number of seconds to wait before aborting connect
+      # @param socket_class [Class]   Custom low-level socket class
+      # @raise [Socketry::AddressError] an invalid address was given
+      # @raise [Socketry::TimeoutError] connect operation timed out
+      # @return [self]
       def connect(
         remote_addr,
         remote_port,
@@ -92,12 +117,19 @@ module Socketry
         self
       end
 
+      # Re-establish a lost TCP connection
+      #
+      # @param timeout [Numeric] Number of seconds to wait before aborting re-connect
+      # @raise [Socketry::StateError] not in a disconnected state
       def reconnect(timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:connect])
         ensure_disconnected
         raise StateError, "can't reconnect: never completed initial connection" unless @remote_addr
         connect(@remote_addr, @remote_port, local_addr: @local_addr, local_port: @local_port, timeout: timeout)
       end
 
+      # Create a Socketry::TCP::Socket from a low-level socket
+      #
+      # @param socket [::Socket] (or specified socket_class) low-level socket to wrap
       def from_socket(socket)
         ensure_disconnected
         raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
@@ -105,37 +137,71 @@ module Socketry
         self
       end
 
-      def read_nonblock(size)
+      # Perform a non-blocking read operation
+      #
+      # @param size [Fixnum] number of bytes to attempt to read
+      # @param outbuf [String, NilClass] an optional buffer into which data should be read
+      # @raise [Socketry::Error] an I/O operation failed
+      # @return [String, :wait_readable] data read, or :wait_readable if operation would block
+      def read_nonblock(size, outbuf = nil)
         ensure_connected
-        @socket.read_nonblock(size, exception: false)
+        case outbuf
+        when String
+          @socket.read_nonblock(size, outbuf, exception: false)
+        when NilClass
+          @socket.read_nonblock(size, exception: false)
+        else raise TypeError, "unexpected outbuf class: #{outbuf.class}"
+        end
       rescue IO::WaitReadable
         # Some buggy Rubies continue to raise this exception
         :wait_readable
+      rescue IOError => ex
+        raise Socketry::Error, ex.message, ex.backtrace
       end
 
+      # Perform a non-blocking write operation
+      #
+      # @param data [String] number of bytes to attempt to read
+      # @raise [Socketry::Error] an I/O operation failed
+      # @return [String, :wait_readable] data read, or :wait_readable if operation would block
       def write_nonblock(data)
         ensure_connected
         @socket.write_nonblock(data, exception: false)
       rescue IO::WaitWriteable
         # Some buggy Rubies continue to raise this exception
         :wait_writable
+      rescue IOError => ex
+        raise Socketry::Error, ex.message, ex.backtrace
       end
 
+      # Check whether Nagle's algorithm has been disabled
+      #
+      # @return [true]  Nagle's algorithm has been explicitly disabled
+      # @return [false] Nagle's algorithm is enabled (default)
       def nodelay
         ensure_connected
         @socket.getsockopt(::Socket::IPPROTO_TCP, ::Socket::TCP_NODELAY).int.nonzero?
       end
 
+      # Disable or enable Nagle's algorithm
+      #
+      # @param flag [true, false] disable or enable coalescing multiple writesusing Nagle's algorithm
       def nodelay=(flag)
         ensure_connected
         @socket.setsockopt(::Socket::IPPROTO_TCP, ::Socket::TCP_NODELAY, flag ? 1 : 0)
       end
 
+      # Return a raw Ruby I/O object
+      #
+      # @return [IO] Ruby I/O object
       def to_io
         ensure_connected
-        @socket.to_io
+        ::IO.try_convert(@socket)
       end
 
+      # Close the socket
+      #
+      # @return [true, false] true if the socket was open, false if closed
       def close
         return false unless connected?
         @socket.close
@@ -144,6 +210,15 @@ module Socketry
         @socket = nil
       end
 
+      # Is the socket currently connected?
+      #
+      # This method returns the local connection state. However, it's possible
+      # the remote side has closed the connection, so it's not actually
+      # possible to actually know if the socket is actually still open without
+      # reading from or writing to it. It's sort of like the Heisenberg
+      # uncertainty principle of sockets.
+      #
+      # @return [true, false] do we locally think the socket is open?
       def connected?
         @socket != nil
       end

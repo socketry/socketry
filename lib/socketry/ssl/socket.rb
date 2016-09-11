@@ -78,6 +78,9 @@ module Socketry
       # Due to SSL, we may need to write to complete a read (e.g. renegotiation)
       rescue IO::WaitWritable
         :wait_writable
+      rescue => ex
+        # TODO: more specific exceptions
+        raise Socketry::Error, ex.message, ex.backtrace
       end
 
       def write_nonblock(data)
@@ -89,6 +92,9 @@ module Socketry
       # Due to SSL, we may need to write to complete a read (e.g. renegotiation)
       rescue IO::WaitReadable
         :wait_readable
+      rescue => ex
+        # TODO: more specific exceptions
+        raise Socketry::Error, ex.message, ex.backtrace
       end
 
       def close
