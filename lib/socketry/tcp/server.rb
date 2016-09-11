@@ -22,7 +22,7 @@ module Socketry
         port = nil,
         read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
         write_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:write],
-        timer_class: Socketry::Timeout::DEFAULT_TIMER,
+        timer: Socketry::Timeout::DEFAULT_TIMER.new,
         resolver: Socketry::Resolver::DEFAULT_RESOLVER,
         server_class: ::TCPServer,
         socket_class: ::TCPSocket
@@ -38,7 +38,7 @@ module Socketry
           @server = server_class.new(hostname_or_port)
         end
 
-        start_timer(timer_class: timer_class)
+        start_timer(timer)
       end
 
       def accept(timeout: nil)

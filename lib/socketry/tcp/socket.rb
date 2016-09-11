@@ -17,7 +17,7 @@ module Socketry
       def initialize(
         read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
         write_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:write],
-        timer_class: Socketry::Timeout::DEFAULT_TIMER,
+        timer: Socketry::Timeout::DEFAULT_TIMER.new,
         resolver: Socketry::Resolver::DEFAULT_RESOLVER,
         socket_class: ::Socket
       )
@@ -35,7 +35,7 @@ module Socketry
         @local_addr  = nil
         @local_port  = nil
 
-        start_timer(timer_class: timer_class)
+        start_timer(timer)
       end
 
       def connect(
