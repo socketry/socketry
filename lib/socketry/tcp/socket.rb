@@ -74,7 +74,8 @@ module Socketry
           begin
             socket.connect_nonblock(remote_sockaddr)
           rescue Errno::EINPROGRESS, Errno::EALREADY
-            # JRuby does not seem to correctly support Socket#wait_writable in this case
+            # Earlier JRuby 9.x versions do not seem to correctly support Socket#wait_writable in this case
+            # Newer versions seem to behave correctly
             retry if IO.select(nil, [socket], nil, time_remaining(timeout))
 
             socket.close
