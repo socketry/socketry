@@ -3,7 +3,7 @@
 [gem-image]: https://badge.fury.io/rb/socketry.svg
 [gem-link]: https://rubygems.org/gems/socketry
 [build-image]: https://secure.travis-ci.org/celluloid/socketry.svg?branch=master
-[build-link]: https://codeclimate.com/github/celluloid/socketry
+[build-link]: https://travis-ci.org/celluloid/socketry
 [codeclimate-image]: https://codeclimate.com/github/celluloid/socketry.svg?branch=master
 [codeclimate-link]: https://codeclimate.com/github/celluloid/socketry
 [coverage-image]: https://coveralls.io/repos/github/celluloid/socketry/badge.svg?branch=master
