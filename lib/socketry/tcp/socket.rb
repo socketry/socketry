@@ -243,14 +243,14 @@ module Socketry
       #
       # @return [true, false] true if the socket was open, false if closed
       def close
-        return false unless connected?
+        return false if closed?
         @socket.close
         true
       ensure
         @socket = nil
       end
 
-      # Is the socket currently connected?
+      # Is the socket closed?
       #
       # This method returns the local connection state. However, it's possible
       # the remote side has closed the connection, so it's not actually
@@ -258,20 +258,20 @@ module Socketry
       # reading from or writing to it. It's sort of like the Heisenberg
       # uncertainty principle of sockets.
       #
-      # @return [true, false] do we locally think the socket is open?
-      def connected?
-        @socket != nil
+      # @return [true, false] do we locally think the socket is closed?
+      def closed?
+        @socket.nil?
       end
 
       private
 
       def ensure_connected
-        return true if connected?
-        raise StateError, "not connected"
+        raise StateError, "not connected" if closed?
+        true
       end
 
       def ensure_disconnected
-        return true unless connected?
+        return true if closed?
         raise StateError, "already connected"
       end
     end
