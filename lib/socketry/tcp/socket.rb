@@ -199,7 +199,7 @@ module Socketry
       # @param data [String] number of bytes to attempt to read
       # @raise [Socketry::Error] an I/O operation failed
       # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
-      def writepartial(data, timeout: @read_timeout)
+      def writepartial(data, timeout: @write_timeout)
         set_timeout(timeout)
 
         begin
