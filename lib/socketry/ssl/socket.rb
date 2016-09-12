@@ -100,9 +100,15 @@ module Socketry
       # @param outbuf [String, NilClass] an optional buffer into which data should be read
       # @raise [Socketry::Error] an I/O operation failed
       # @return [String, :wait_readable] data read, or :wait_readable if operation would block
-      def read_nonblock(size)
+      def read_nonblock(size, outbuf: nil)
         ensure_connected
-        @ssl_socket.read_nonblock(size, exception: false)
+        case outbuf
+        when String
+          @ssl_socket.read_nonblock(size, outbuf, exception: false)
+        when NilClass
+          @ssl_socket.read_nonblock(size, exception: false)
+        else raise TypeError, "unexpected outbuf class: #{outbuf.class}"
+        end
       # Some buggy Rubies continue to raise exceptions in these cases
       rescue IO::WaitReadable
         :wait_readable

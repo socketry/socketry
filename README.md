@@ -41,7 +41,7 @@ seamlessly leverage [Celluloid::IO] for event-driven I/O.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'socketry'
+gem "socketry"
 ```
 
 And then execute:
@@ -52,9 +52,27 @@ Or install it yourself as:
 
     $ gem install socketry
 
-## Usage
+## Basic Usage
 
-TODO: Coming soon!
+Below is a basic example of how to use Socketry to make an HTTPS request:
+
+```ruby
+require "socketry"
+
+socket = Socketry::SSL::Socket.connect("github.com", 443)
+socket.writepartial("GET / HTTP/1.0\r\nHost: github.com\r\n\r\n")
+p socket.readpartial(1024)
+```
+
+TCP, UDP, and SSL servers and sockets also available.
+
+## Documentation
+
+[Please see the Socketry wiki](https://github.com/socketry/socketry/wiki)
+for more detailed documentation and usage notes.
+
+[YARD API documentation](http://www.rubydoc.info/gems/socketry/)
+is also available.
 
 ## Contributing
 
