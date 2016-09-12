@@ -87,8 +87,6 @@ is also available.
 
 ## License
 
-Copyright (c) 2016 Tony Arcieri
-
-Distributed under the MIT License. See
+Copyright (c) 2016 Tony Arcieri. Distributed under the MIT License. See
 [LICENSE.txt](https://github.com/socketry/socketry/blob/master/LICENSE.txt)
 for further details.
