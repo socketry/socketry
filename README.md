@@ -2,14 +2,14 @@
 
 [gem-image]: https://badge.fury.io/rb/socketry.svg
 [gem-link]: https://rubygems.org/gems/socketry
-[build-image]: https://secure.travis-ci.org/tarcieri/socketry.svg?branch=master
-[build-link]: https://travis-ci.org/tarcieri/socketry
-[codeclimate-image]: https://codeclimate.com/github/tarcieri/socketry.svg?branch=master
-[codeclimate-link]: https://codeclimate.com/github/tarcieri/socketry
-[coverage-image]: https://coveralls.io/repos/github/tarcieri/socketry/badge.svg?branch=master
-[coverage-link]: https://coveralls.io/github/tarcieri/socketry?branch=master
+[build-image]: https://secure.travis-ci.org/socketry/socketry.svg?branch=master
+[build-link]: https://travis-ci.org/socketry/socketry
+[codeclimate-image]: https://codeclimate.com/github/socketry/socketry.svg?branch=master
+[codeclimate-link]: https://codeclimate.com/github/socketry/socketry
+[coverage-image]: https://coveralls.io/repos/github/socketry/socketry/badge.svg?branch=master
+[coverage-link]: https://coveralls.io/github/socketry/socketry?branch=master
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg
-[license-link]: https://github.com/tarcieri/socketry/blob/master/LICENSE.txt
+[license-link]: https://github.com/socketry/socketry/blob/master/LICENSE.txt
 
 High-level wrappers for Ruby sockets with advanced thread-safe timeout support.
 
@@ -51,5 +51,5 @@ TODO: Coming soon!
 Copyright (c) 2016 Tony Arcieri
 
 Distributed under the MIT License. See
-[LICENSE.txt](https://github.com/tarcieri/socketry/blob/master/LICENSE.txt)
+[LICENSE.txt](https://github.com/socketry/socketry/blob/master/LICENSE.txt)
 for further details.
