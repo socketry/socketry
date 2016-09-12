@@ -127,7 +127,7 @@ module Socketry
         connect(@remote_addr, @remote_port, local_addr: @local_addr, local_port: @local_port, timeout: timeout)
       end
 
-      # Create a Socketry::TCP::Socket from a low-level socket
+      # Wrap a Ruby/low-level socket in an Socketry::TCP::Socket
       #
       # @param socket [::Socket] (or specified socket_class) low-level socket to wrap
       def from_socket(socket)

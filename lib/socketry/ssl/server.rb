@@ -5,6 +5,9 @@ module Socketry
   module SSL
     # SSL Server
     class Server < Socketry::TCP::Server
+      # Create a new SSL server
+      #
+      # @return [Socketry::SSL::Server]
       def initialize(
         hostname_or_port,
         port = nil,
@@ -22,6 +25,17 @@ module Socketry
         super(hostname_or_port, port, **args)
       end
 
+      # Accept a connection to the server
+      #
+      # Note that this method also performs an SSL handshake and will therefore
+      # block other sockets which are ready to be accepted.
+      #
+      # Multithreaded servers should invoke this method after spawning a thread
+      # to ensure a slow/malicious connection can't cause a denial-of-service
+      # attack against the server.
+      #
+      # @param timeout [Numeric, NilClass] seconds to wait before aborting the accept
+      # @return [Socketry::SSL::Socket]
       def accept(timeout: nil, **args)
         ruby_socket = super(timeout: timeout, **args).to_io
         ssl_socket  = @ssl_socket_class.new(ruby_socket, @ssl_context)

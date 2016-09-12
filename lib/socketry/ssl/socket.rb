@@ -5,6 +5,14 @@ module Socketry
   module SSL
     # SSL Sockets
     class Socket < Socketry::TCP::Socket
+      # Create an unconnected Socketry::SSL::Socket
+      #
+      # @param read_timeout  [Numeric] Seconds to wait before an uncompleted read errors
+      # @param write_timeout [Numeric] Seconds to wait before an uncompleted write errors
+      # @param timer         [Object]  A timekeeping object to use for measuring timeouts
+      # @param resolver      [Object]  A resolver object to use for resolving DNS names
+      # @param socket_class  [Object]  Underlying socket class which implements I/O ops
+      # @return [Socketry::SSL::Socket]
       def initialize(ssl_socket_class: OpenSSL::SSL::SSLSocket, ssl_params: nil, **args)
         raise TypeError, "expected Hash, got #{ssl_params.class}" if ssl_params && !ssl_params.is_a?(Hash)
 
@@ -17,6 +25,18 @@ module Socketry
         super(**args)
       end
 
+      # Make an SSL connection to a remote host
+      #
+      # @param remote_addr  [String]  DNS name or IP address of the host to connect to
+      # @param remote_port  [Fixnum]  TCP port to connect to
+      # @param local_addr   [String]  DNS name or IP address to bind to locally
+      # @param local_port   [Fixnum]  Local TCP port to bind to
+      # @param timeout      [Numeric] Number of seconds to wait before aborting connect
+      # @param socket_class [Class]   Custom low-level socket class
+      # @raise [Socketry::AddressError] an invalid address was given
+      # @raise [Socketry::TimeoutError] connect operation timed out
+      # @raise [Socketry::SSL::Error] an error occurred negotiating an SSL connection
+      # @return [self]
       def connect(
         remote_addr,
         remote_port,
@@ -57,6 +77,11 @@ module Socketry
         raise ex
       end
 
+      # Wrap a Ruby OpenSSL::SSL::SSLSocket (or other low-level SSL socket)
+      #
+      # @param socket [::Socket] (or specified socket_class) low-level socket to wrap
+      # @param ssl_socket [OpenSSL::SSL::SSLSocket] SSL socket class associated with this socket
+      # @return [self]
       def from_socket(socket, ssl_socket)
         raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
         raise TypeError, "expected #{@ssl_socket_class}, got #{ssl_socket.class}" unless ssl_socket.is_a?(@ssl_socket_class)
@@ -69,6 +94,12 @@ module Socketry
         self
       end
 
+      # Perform a non-blocking read operation
+      #
+      # @param size [Fixnum] number of bytes to attempt to read
+      # @param outbuf [String, NilClass] an optional buffer into which data should be read
+      # @raise [Socketry::Error] an I/O operation failed
+      # @return [String, :wait_readable] data read, or :wait_readable if operation would block
       def read_nonblock(size)
         ensure_connected
         @ssl_socket.read_nonblock(size, exception: false)
@@ -83,6 +114,11 @@ module Socketry
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
+      # Perform a non-blocking write operation
+      #
+      # @param data [String] number of bytes to attempt to read
+      # @raise [Socketry::Error] an I/O operation failed
+      # @return [String, :wait_readable] data read, or :wait_readable if operation would block
       def write_nonblock(data)
         ensure_connected
         @ssl_socket.write_nonblock(data, exception: false)
@@ -97,6 +133,9 @@ module Socketry
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
+      # Close the socket
+      #
+      # @return [true, false] true if the socket was open, false if closed
       def close
         @ssl_socket.close
         super

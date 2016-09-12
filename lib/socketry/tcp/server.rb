@@ -10,6 +10,7 @@ module Socketry
 
       attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
 
+      # Create a new TCP server, yielding the server socket and auto-closing it
       def self.open(hostname_or_port, port = nil, **args)
         server = new(hostname_or_port, port, **args)
         result = yield server
@@ -17,6 +18,9 @@ module Socketry
         result
       end
 
+      # Create a new TCP server
+      #
+      # @return [Socketry::TCP::Server]
       def initialize(
         hostname_or_port,
         port = nil,
@@ -41,6 +45,10 @@ module Socketry
         start_timer(timer)
       end
 
+      # Accept a connection to the server
+      #
+      # @param timeout [Numeric, NilClass] seconds to wait before aborting the accept
+      # @return [Socketry::TCP::Socket]
       def accept(timeout: nil)
         set_timeout(timeout)
 
@@ -63,6 +71,7 @@ module Socketry
         clear_timeout(timeout)
       end
 
+      # Close the server
       def close
         return false unless @server
         @server.close rescue nil
