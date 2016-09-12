@@ -7,6 +7,8 @@ RSpec.describe Socketry::TCP::Socket do
   let(:mock_server) { ::TCPServer.new(remote_host, remote_port) }
   let(:peer_socket) { mock_server.accept }
 
+  let(:example_data) { "Hello, peer!" }
+
   before do
     mock_server
     tcp_socket.connect(remote_host, remote_port)
@@ -40,8 +42,6 @@ RSpec.describe Socketry::TCP::Socket do
   end
 
   context "non-blocking I/O" do
-    let(:example_data) { "Hello, peer!" }
-
     describe "#read_nonblock" do
       it "reads data if available" do
         peer_socket.write(example_data)
@@ -61,8 +61,21 @@ RSpec.describe Socketry::TCP::Socket do
         expect(tcp_socket.write_nonblock(example_data)).to eq example_data.size
       end
 
-      it "returns :wait_writable if we aren't ready to write"
+      pending "returns :wait_writable if we aren't ready to write"
     end
+  end
+
+  describe "#readpartial" do
+    it "reads partial data" do
+      peer_socket.write(example_data)
+      peer_socket.close
+
+      expect(tcp_socket.readpartial(example_data.size)).to eq example_data
+    end
+  end
+
+  describe "#writepartial" do
+    pending "writes partial data"
   end
 
   describe "#to_io" do

@@ -143,7 +143,7 @@ module Socketry
       # @param outbuf [String, NilClass] an optional buffer into which data should be read
       # @raise [Socketry::Error] an I/O operation failed
       # @return [String, :wait_readable] data read, or :wait_readable if operation would block
-      def read_nonblock(size, outbuf = nil)
+      def read_nonblock(size, outbuf: nil)
         ensure_connected
         case outbuf
         when String
@@ -159,11 +159,29 @@ module Socketry
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
+      # Read a partial amounth of data, blocking until it becomes available
+      #
+      # @param size [Fixnum] number of bytes to attempt to read
+      # @raise [Socketry::Error] an I/O operation failed
+      # @return [String]
+      def readpartial(size, outbuf: nil, timeout: @read_timeout)
+        set_timeout(timeout)
+
+        while (result = read_nonblock(size, outbuf: outbuf)) == :wait_readable
+          next if @socket.wait_readable(read_timeout)
+          raise TimeoutError, "read timed out after #{timeout} seconds"
+        end
+
+        result || :eof
+      ensure
+        clear_timeout(timeout)
+      end
+
       # Perform a non-blocking write operation
       #
       # @param data [String] number of bytes to attempt to read
       # @raise [Socketry::Error] an I/O operation failed
-      # @return [String, :wait_readable] data read, or :wait_readable if operation would block
+      # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
       def write_nonblock(data)
         ensure_connected
         @socket.write_nonblock(data, exception: false)
@@ -172,6 +190,24 @@ module Socketry
         :wait_writable
       rescue IOError => ex
         raise Socketry::Error, ex.message, ex.backtrace
+      end
+
+      # Write a partial amounth of data, blocking until it's completed
+      #
+      # @param data [String] number of bytes to attempt to read
+      # @raise [Socketry::Error] an I/O operation failed
+      # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
+      def writepartial(data, timeout: @read_timeout)
+        set_timeout(timeout)
+
+        while (result = write_nonblock(data)) == :wait_writable
+          next if @socket.wait_writable(read_timeout)
+          raise TimeoutError, "write timed out after #{timeout} seconds"
+        end
+
+        result || :eof
+      ensure
+        clear_timeout(timeout)
       end
 
       # Check whether Nagle's algorithm has been disabled

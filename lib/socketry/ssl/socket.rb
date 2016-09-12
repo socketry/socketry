@@ -118,7 +118,7 @@ module Socketry
       #
       # @param data [String] number of bytes to attempt to read
       # @raise [Socketry::Error] an I/O operation failed
-      # @return [String, :wait_readable] data read, or :wait_readable if operation would block
+      # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
       def write_nonblock(data)
         ensure_connected
         @ssl_socket.write_nonblock(data, exception: false)
