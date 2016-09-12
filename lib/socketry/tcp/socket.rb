@@ -167,14 +167,16 @@ module Socketry
       def readpartial(size, outbuf: nil, timeout: @read_timeout)
         set_timeout(timeout)
 
-        while (result = read_nonblock(size, outbuf: outbuf)) == :wait_readable
-          next if @socket.wait_readable(read_timeout)
-          raise TimeoutError, "read timed out after #{timeout} seconds"
+        begin
+          while (result = read_nonblock(size, outbuf: outbuf)) == :wait_readable
+            next if @socket.wait_readable(read_timeout)
+            raise TimeoutError, "read timed out after #{timeout} seconds"
+          end
+        ensure
+          clear_timeout(timeout)
         end
 
         result || :eof
-      ensure
-        clear_timeout(timeout)
       end
 
       # Perform a non-blocking write operation
@@ -200,14 +202,16 @@ module Socketry
       def writepartial(data, timeout: @read_timeout)
         set_timeout(timeout)
 
-        while (result = write_nonblock(data)) == :wait_writable
-          next if @socket.wait_writable(read_timeout)
-          raise TimeoutError, "write timed out after #{timeout} seconds"
+        begin
+          while (result = write_nonblock(data)) == :wait_writable
+            next if @socket.wait_writable(read_timeout)
+            raise TimeoutError, "write timed out after #{timeout} seconds"
+          end
+        ensure
+          clear_timeout(timeout)
         end
 
         result || :eof
-      ensure
-        clear_timeout(timeout)
       end
 
       # Check whether Nagle's algorithm has been disabled

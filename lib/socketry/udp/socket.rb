@@ -9,6 +9,10 @@ module Socketry
 
       attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
 
+      # Create a UDP socket matching the given socket's address family
+      #
+      # @param remote_addr [String] address to connect/bind to
+      # @return [Socketry::UDP::Socket]
       def self.from_addr(remote_addr, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
         addr = resolver.resolve(remote_addr)
         if addr.ipv4?
@@ -19,14 +23,23 @@ module Socketry
         end
       end
 
+      # Bind to the given address and port
+      #
+      # @return [Socketry::UDP::Socket]
       def self.bind(remote_addr, remote_port, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
         from_addr(remote_addr, resolver: resolver).bind(remote_addr, remote_port)
       end
 
+      # Connect to the given address and port
+      #
+      # @return [Socketry::UDP::Socket]
       def self.connect(remote_addr, remote_port, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
         from_addr(remote_addr, resolver: resolver).connect(remote_addr, remote_port)
       end
 
+      # Create a new UDP socket
+      #
+      # @return [Socketry::UDP::Socket]
       def initialize(
         family: :ipv4,
         read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
@@ -53,6 +66,9 @@ module Socketry
         start_timer(timer)
       end
 
+      # Bind to the given address and port
+      #
+      # @return [self]
       def bind(remote_addr, remote_port)
         @socket.bind(@resolver.resolve(remote_addr), remote_port)
         self
@@ -61,6 +77,9 @@ module Socketry
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
+      # Create a new UDP socket
+      #
+      # @return [self]
       def connect(remote_addr, remote_port)
         @socket.connect(@resolver.resolve(remote_addr), remote_port)
         self
@@ -69,6 +88,9 @@ module Socketry
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
+      # Perform a non-blocking receive
+      #
+      # @return [String, :wait_readable] received packet or indication to wait
       def recvfrom_nonblock(maxlen)
         @socket.recvfrom_nonblock(maxlen)
       rescue ::IO::WaitReadable
@@ -78,21 +100,25 @@ module Socketry
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
-      def recvfrom(maxlen)
-        set_timeout(@read_timeout)
+      # Perform a blocking receive
+      #
+      # @return [String] received data
+      def recvfrom(maxlen, timeout: @read_timeout)
+        set_timeout(timeout)
 
         begin
           while (result = recvfrom_nonblock(maxlen)) == :wait_readable
-            next if @socket.wait_readable(time_remaining(@read_timeout))
-            raise Socketry::TimeoutError, "recvfrom timed out after #{@read_timeout} seconds"
+            next if @socket.wait_readable(time_remaining(timeout))
+            raise Socketry::TimeoutError, "recvfrom timed out after #{timeout} seconds"
           end
         ensure
-          clear_timeout(@read_timeout)
+          clear_timeout(imeout)
         end
 
         result
       end
 
+      # Send data to the given host and port
       def send(msg, host:, port:)
         @socket.send(msg, 0, @resolver.resolve(host), port)
       rescue => ex
