@@ -6,7 +6,7 @@ require "socketry/version"
 Gem::Specification.new do |spec|
   spec.name        = "socketry"
   spec.version     = Socketry::VERSION
-  spec.authors     = ["Tony Arcieri", "Zachary Anker"]
+  spec.authors     = ["Tony Arcieri"]
   spec.email       = ["bascule@gmail.com"]
   spec.licenses    = ["MIT"]
   spec.homepage    = "https://github.com/celluloid/socketry/"
