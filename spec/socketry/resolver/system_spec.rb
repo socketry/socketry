@@ -8,6 +8,7 @@ RSpec.describe Socketry::Resolver::System, online: true do
   # Unfortunately Resolv::DNS doesn't seem to raise Resolv::TimeoutError
   # reliably, so we can't yet include this in our shared examples.
   it "raises Socketry::TimeoutError if a request times out" do
+    skip if defined?(JRUBY_VERSION) # This test is flaky on JRuby
     expect { described_class.resolve(valid_dns_example, timeout: 0.000001) }.to raise_error(Socketry::TimeoutError)
   end
 
