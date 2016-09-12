@@ -2,7 +2,7 @@
 
 RSpec.describe Socketry::TCP::Server do
   let(:bind_addr) { "localhost" }
-  let(:bind_port) { 23_456 }
+  let(:bind_port) { unoccupied_port }
 
   subject(:server) { described_class.new(bind_addr, bind_port) }
 

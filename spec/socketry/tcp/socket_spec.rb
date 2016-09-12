@@ -2,7 +2,7 @@
 
 RSpec.describe Socketry::TCP::Socket do
   let(:remote_host) { "localhost" }
-  let(:remote_port) { 12_345 }
+  let(:remote_port) { unoccupied_port(addr: remote_host) }
 
   let(:mock_server) { ::TCPServer.new(remote_host, remote_port) }
   let(:peer_socket) { mock_server.accept }

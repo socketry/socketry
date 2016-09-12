@@ -28,3 +28,18 @@ RSpec.shared_examples "Socketry DNS resolver" do
     expect { described_class.resolve(valid_dns_example, timeout: invalid_timeout) }.to raise_error(TypeError)
   end
 end
+
+def unoccupied_port(addr: "localhost", port: 10_000, max_port: 15_000)
+  loop do
+    begin
+      socket = TCPSocket.new(addr, port)
+    rescue Errno::ECONNREFUSED
+      return port
+    ensure
+      socket.close rescue nil
+    end
+
+    port += 1
+    raise "exhausted too many ports" if port > max_port
+  end
+end
