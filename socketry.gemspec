@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors     = ["Tony Arcieri"]
   spec.email       = ["bascule@gmail.com"]
   spec.licenses    = ["MIT"]
-  spec.homepage    = "https://github.com/celluloid/socketry/"
+  spec.homepage    = "https://github.com/socketry/socketry/"
   spec.summary     = "High-level wrappers for Ruby sockets with advanced thread-safe timeout support"
   spec.description = <<-DESCRIPTION.strip.gsub(/\s+/, " ")
     Socketry wraps Ruby's sockets with an advanced timeout engine which is able to provide multiple
