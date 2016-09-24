@@ -27,7 +27,7 @@ module Socketry
 
         @ssl_socket_class = ssl_socket_class
         @ssl_context = ssl_context
-        @ssl_context.set_params(ssl_params) if ssl_params
+        @ssl_context.set_params(ssl_params) if ssl_params && !ssl_params.empty?
         @ssl_context.freeze
         @ssl_socket = nil
 
