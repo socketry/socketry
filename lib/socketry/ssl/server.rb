@@ -12,13 +12,15 @@ module Socketry
         hostname_or_port,
         port = nil,
         ssl_socket_class: OpenSSL::SSL::SSLSocket,
+        ssl_context: OpenSSL::SSL::SSLContext.new,
         ssl_params: nil,
         **args
       )
+        raise TypeError, "invalid SSL context (#{ssl_context.class})" unless ssl_context.is_a?(OpenSSL::SSL::SSLContext)
         raise TypeError, "expected Hash, got #{ssl_params.class}" if ssl_params && !ssl_params.is_a?(Hash)
 
         @ssl_socket_class = ssl_socket_class
-        @ssl_context = OpenSSL::SSL::SSLContext.new
+        @ssl_context = ssl_context
         @ssl_context.set_params(ssl_params) if ssl_params
         @ssl_context.freeze
 

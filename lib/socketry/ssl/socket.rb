@@ -7,17 +7,26 @@ module Socketry
     class Socket < Socketry::TCP::Socket
       # Create an unconnected Socketry::SSL::Socket
       #
-      # @param read_timeout  [Numeric] Seconds to wait before an uncompleted read errors
+      # @param read_timeout [Numeric] Seconds to wait before an uncompleted read errors
       # @param write_timeout [Numeric] Seconds to wait before an uncompleted write errors
-      # @param timer         [Object]  A timekeeping object to use for measuring timeouts
-      # @param resolver      [Object]  A resolver object to use for resolving DNS names
-      # @param socket_class  [Object]  Underlying socket class which implements I/O ops
+      # @param timer [Object] A timekeeping object to use for measuring timeouts
+      # @param resolver [Object] A resolver object to use for resolving DNS names
+      # @param socket_class [Object] Underlying socket class which implements I/O ops
+      # @param ssl_socket_class [Object] Class which provides the underlying SSL implementation
+      # @param ssl_context [OpenSSL::SSL::SSLContext] SSL configuration object
+      # @param ssL_params [Hash] Parameter hash to set on the given SSL context
       # @return [Socketry::SSL::Socket]
-      def initialize(ssl_socket_class: OpenSSL::SSL::SSLSocket, ssl_params: nil, **args)
+      def initialize(
+        ssl_socket_class: OpenSSL::SSL::SSLSocket,
+        ssl_context: OpenSSL::SSL::SSLContext.new,
+        ssl_params: nil,
+        **args
+      )
+        raise TypeError, "invalid SSL context (#{ssl_context.class})" unless ssl_context.is_a?(OpenSSL::SSL::SSLContext)
         raise TypeError, "expected Hash, got #{ssl_params.class}" if ssl_params && !ssl_params.is_a?(Hash)
 
         @ssl_socket_class = ssl_socket_class
-        @ssl_context = OpenSSL::SSL::SSLContext.new
+        @ssl_context = ssl_context
         @ssl_context.set_params(ssl_params) if ssl_params
         @ssl_context.freeze
         @ssl_socket = nil
@@ -27,12 +36,12 @@ module Socketry
 
       # Make an SSL connection to a remote host
       #
-      # @param remote_addr  [String]  DNS name or IP address of the host to connect to
-      # @param remote_port  [Fixnum]  TCP port to connect to
-      # @param local_addr   [String]  DNS name or IP address to bind to locally
-      # @param local_port   [Fixnum]  Local TCP port to bind to
-      # @param timeout      [Numeric] Number of seconds to wait before aborting connect
-      # @param socket_class [Class]   Custom low-level socket class
+      # @param remote_addr [String] DNS name or IP address of the host to connect to
+      # @param remote_port [Fixnum] TCP port to connect to
+      # @param local_addr [String] DNS name or IP address to bind to locally
+      # @param local_port [Fixnum] Local TCP port to bind to
+      # @param timeout [Numeric] Number of seconds to wait before aborting connect
+      # @param socket_class [Class] Custom low-level socket class
       # @raise [Socketry::AddressError] an invalid address was given
       # @raise [Socketry::TimeoutError] connect operation timed out
       # @raise [Socketry::SSL::Error] an error occurred negotiating an SSL connection
