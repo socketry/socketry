@@ -25,6 +25,8 @@ RSpec.describe Socketry::TCP::Socket do
     it "connects to TCP servers" do
       expect(described_class.new.connect(remote_host, remote_port)).to be_a described_class
     end
+
+    pending "raises Socketry::ConnectionRefusedError if a connection was refused"
   end
 
   describe "#reconnect" do

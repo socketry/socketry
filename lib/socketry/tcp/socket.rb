@@ -98,6 +98,8 @@ module Socketry
           # Note: `exception: false` for Socket#connect_nonblock is only supported in Ruby 2.3+
           begin
             socket.connect_nonblock(remote_sockaddr)
+          rescue Errno::ECONNREFUSED => ex
+            raise Socketry::ConnectionRefusedError, "connection to #{remote_addr}:#{remote_port} refused", ex.backtrace
           rescue Errno::EINPROGRESS, Errno::EALREADY
             # Earlier JRuby 9.x versions do not seem to correctly support Socket#wait_writable in this case
             # Newer versions seem to behave correctly
