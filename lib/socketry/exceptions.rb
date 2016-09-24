@@ -2,7 +2,7 @@
 
 module Socketry
   # Generic catch all for all Socketry errors
-  Error = Class.new(::IOError)
+  Error = Class.new(StandardError)
 
   # Invalid address
   AddressError = Class.new(Socketry::Error)
