@@ -44,7 +44,7 @@ module Socketry
     def set_timeout(timeout)
       raise Socketry::InternalError, "deadline already set" if @deadline
       return unless timeout
-      raise Socketry::TimeoutError, "time expired" if timeout.negative?
+      raise Socketry::TimeoutError, "time expired" if timeout < 0
 
       @deadline = lifetime + timeout
     end
