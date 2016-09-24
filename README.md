@@ -64,11 +64,11 @@ socket.writepartial("GET / HTTP/1.0\r\nHost: github.com\r\n\r\n")
 p socket.readpartial(1024)
 ```
 
-[TCP], [UDP], and [SSL] servers and sockets also available.
+[TCP], [SSL], and [UDP] servers and sockets also available.
 
 [TCP]: https://github.com/socketry/socketry/wiki/TCP
-[UDP]: https://github.com/socketry/socketry/wiki/UDP
 [SSL]: https://github.com/socketry/socketry/wiki/SSL
+[UDP]: https://github.com/socketry/socketry/wiki/UDP
 
 ## Documentation
 
