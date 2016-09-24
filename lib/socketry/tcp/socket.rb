@@ -162,14 +162,16 @@ module Socketry
       # Read a partial amounth of data, blocking until it becomes available
       #
       # @param size [Fixnum] number of bytes to attempt to read
+      # @param outbuf [String] an output buffer to read data into
+      # @param timeout [Numeric] Number of seconds to wait for read operation to complete
       # @raise [Socketry::Error] an I/O operation failed
-      # @return [String]
+      # @return [String, :eof] bytes read, or :eof if socket closed while reading
       def readpartial(size, outbuf: nil, timeout: @read_timeout)
         set_timeout(timeout)
 
         begin
           while (result = read_nonblock(size, outbuf: outbuf)) == :wait_readable
-            next if @socket.wait_readable(read_timeout)
+            next if @socket.wait_readable(time_remaining(timeout))
             raise TimeoutError, "read timed out after #{timeout} seconds"
           end
         ensure
@@ -179,9 +181,35 @@ module Socketry
         result || :eof
       end
 
+      # Read all of the data in a given string to a socket unless timeout or EOF
+      #
+      # @param size [Fixnum] number of bytes to attempt to read
+      # @param outbuf [String] an output buffer to read data into
+      # @param timeout [Numeric] Number of seconds to wait for read operation to complete
+      # @raise [Socketry::Error] an I/O operation failed
+      # @return [String, :eof] bytes read, or :eof if socket closed while reading
+      def read(size, outbuf: String.new, timeout: @write_timeout)
+        outbuf.clear
+        deadline = lifetime + timeout if timeout
+
+        begin
+          until outbuf.size == size
+            time_remaining = deadline - lifetime if deadline
+            raise Socketry::TimeoutError, "read timed out after #{timeout} seconds" if timeout && time_remaining <= 0
+
+            chunk = readpartial(size - outbuf.size, timeout: time_remaining)
+            return :eof if chunk == :eof
+
+            outbuf << chunk
+          end
+        end
+
+        outbuf
+      end
+
       # Perform a non-blocking write operation
       #
-      # @param data [String] number of bytes to attempt to read
+      # @param data [String] data to write to the socket
       # @raise [Socketry::Error] an I/O operation failed
       # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
       def write_nonblock(data)
@@ -196,15 +224,16 @@ module Socketry
 
       # Write a partial amounth of data, blocking until it's completed
       #
-      # @param data [String] number of bytes to attempt to read
+      # @param data [String] data to write to the socket
+      # @param timeout [Numeric] Number of seconds to wait for write operation to complete
       # @raise [Socketry::Error] an I/O operation failed
-      # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
+      # @return [Fixnum, :eof] number of bytes written, or :eof if socket closed during writing
       def writepartial(data, timeout: @write_timeout)
         set_timeout(timeout)
 
         begin
           while (result = write_nonblock(data)) == :wait_writable
-            next if @socket.wait_writable(read_timeout)
+            next if @socket.wait_writable(time_remaining(timeout))
             raise TimeoutError, "write timed out after #{timeout} seconds"
           end
         ensure
@@ -212,6 +241,32 @@ module Socketry
         end
 
         result || :eof
+      end
+
+      # Write all of the data in a given string to a socket unless timeout or EOF
+      #
+      # @param data [String] data to write to the socket
+      # @param timeout [Numeric] Number of seconds to wait for write operation to complete
+      # @raise [Socketry::Error] an I/O operation failed
+      # @return [Fixnum] number of bytes written, or :eof if socket closed during writing
+      def write(data, timeout: @write_timeout)
+        total_written = data.size
+        deadline = lifetime + timeout if timeout
+
+        begin
+          until data.empty?
+            time_remaining = deadline - lifetime if deadline
+            raise Socketry::TimeoutError, "write timed out after #{timeout} seconds" if timeout && time_remaining <= 0
+
+            bytes_written = writepartial(data, timeout: time_remaining)
+            return :eof if bytes_written == :eof
+
+            break if bytes_written == data.bytesize
+            data = data.byteslice(bytes_written..-1)
+          end
+        end
+
+        total_written
       end
 
       # Check whether Nagle's algorithm has been disabled

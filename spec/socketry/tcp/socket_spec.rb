@@ -65,17 +65,42 @@ RSpec.describe Socketry::TCP::Socket do
     end
   end
 
-  describe "#readpartial" do
-    it "reads partial data" do
-      peer_socket.write(example_data)
-      peer_socket.close
+  context "blocking reads" do
+    describe "#readpartial" do
+      it "reads partial data" do
+        peer_socket.write(example_data)
+        peer_socket.close
 
-      expect(tcp_socket.readpartial(example_data.size)).to eq example_data
+        # TODO: test the case the read is actually partial
+        expect(tcp_socket.readpartial(example_data.size)).to eq example_data
+      end
+    end
+
+    describe "#read" do
+      it "reads complete data" do
+        peer_socket.write(example_data)
+        peer_socket.close
+
+        expect(tcp_socket.read(example_data.size)).to eq example_data
+      end
     end
   end
 
-  describe "#writepartial" do
-    pending "writes partial data"
+  context "blocking writes" do
+    describe "#writepartial" do
+      it "writes partial data" do
+        # TODO: test the case the write is actually partial
+        expect(tcp_socket.writepartial(example_data)).to eq example_data.size
+        expect(peer_socket.read(example_data.size)).to eq example_data
+      end
+    end
+
+    describe "#write" do
+      it "writes complete data" do
+        expect(tcp_socket.writepartial(example_data)).to eq example_data.size
+        expect(peer_socket.read(example_data.size)).to eq example_data
+      end
+    end
   end
 
   describe "#to_io" do
