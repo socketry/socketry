@@ -26,9 +26,10 @@ module Socketry
         raise TypeError, "expected Hash, got #{ssl_params.class}" if ssl_params && !ssl_params.is_a?(Hash)
 
         @ssl_socket_class = ssl_socket_class
+
         @ssl_context = ssl_context
         @ssl_context.set_params(ssl_params) if ssl_params && !ssl_params.empty?
-        @ssl_context.freeze
+
         @ssl_socket = nil
 
         super(**args)
@@ -41,7 +42,8 @@ module Socketry
       # @param local_addr [String] DNS name or IP address to bind to locally
       # @param local_port [Fixnum] Local TCP port to bind to
       # @param timeout [Numeric] Number of seconds to wait before aborting connect
-      # @param socket_class [Class] Custom low-level socket class
+      # @param enable_sni [true, false] (default: true) Enables Server Name Indication (SNI)
+      # @param verify_hostname [true, false] (default: true) Ensure server's hostname matches cert
       # @raise [Socketry::AddressError] an invalid address was given
       # @raise [Socketry::TimeoutError] connect operation timed out
       # @raise [Socketry::SSL::Error] an error occurred negotiating an SSL connection
@@ -52,12 +54,13 @@ module Socketry
         local_addr: nil,
         local_port: nil,
         timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:connect],
+        enable_sni: true,
         verify_hostname: true
       )
         super(remote_addr, remote_port, local_addr: local_addr, local_port: local_port, timeout: timeout)
 
         @ssl_socket = OpenSSL::SSL::SSLSocket.new(@socket, @ssl_context)
-        @ssl_socket.hostname = remote_addr
+        @ssl_socket.hostname = remote_addr if enable_sni
 
         begin
           @ssl_socket.connect_nonblock
@@ -138,7 +141,7 @@ module Socketry
         ensure_connected
         @ssl_socket.write_nonblock(data, exception: false)
       # Some buggy Rubies continue to raise this exception
-      rescue IO::WaitWriteable
+      rescue IO::WaitWritable
         :wait_writable
       # Due to SSL, we may need to write to complete a read (e.g. renegotiation)
       rescue IO::WaitReadable
@@ -152,7 +155,7 @@ module Socketry
       #
       # @return [true, false] true if the socket was open, false if closed
       def close
-        @ssl_socket.close
+        @ssl_socket.close rescue nil
         super
       end
     end
