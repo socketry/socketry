@@ -9,8 +9,6 @@ RSpec.describe Socketry::TCP::Socket do
   let(:mock_server) { ::TCPServer.new(remote_host, remote_port) }
   let(:peer_socket) { mock_server.accept }
 
-  let(:example_data) { "Hello, peer!" }
-
   before do
     mock_server
     stream_socket.connect(remote_host, remote_port)
