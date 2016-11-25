@@ -59,7 +59,6 @@ module Socketry
       # @param local_addr   [String]  DNS name or IP address to bind to locally
       # @param local_port   [Fixnum]  Local TCP port to bind to
       # @param timeout      [Numeric] Number of seconds to wait before aborting connect
-      # @param socket_class [Class]   Custom low-level socket class
       # @raise [Socketry::AddressError] an invalid address was given
       # @raise [Socketry::TimeoutError] connect operation timed out
       # @return [self]
@@ -84,12 +83,10 @@ module Socketry
           local_addr  = @resolver.resolve(local_addr,  timeout: time_remaining(timeout)) if local_addr
           raise ArgumentError, "expected IPAddr from resolver, got #{remote_addr.class}" unless remote_addr.is_a?(IPAddr)
 
-          if remote_addr.ipv4?
-            @family = ::Socket::AF_INET
-          elsif remote_addr.ipv6?
-            @family = ::Socket::AF_INET6
-          else raise Socketry::AddressError, "unsupported IP address family: #{remote_addr}"
-          end
+          @family = if remote_addr.ipv4?    then ::Socket::AF_INET
+                    elsif remote_addr.ipv6? then ::Socket::AF_INET6
+                    else raise Socketry::AddressError, "unsupported IP address family: #{remote_addr}"
+                    end
 
           socket = @socket_class.new(@family, ::Socket::SOCK_STREAM, 0)
           socket.bind Addrinfo.tcp(local_addr.to_s, local_port) if local_addr
