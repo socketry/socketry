@@ -10,6 +10,9 @@ module Socketry
   # Invalid address
   AddressError = Class.new(Socketry::Error)
 
+  # Address is already in use
+  AddressInUseError = Class.new(Socketry::Error)
+
   # Timeouts performing an I/O operation
   TimeoutError = Class.new(Socketry::Error)
 
