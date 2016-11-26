@@ -7,11 +7,12 @@ module Socketry
     class Socket
       include Socketry::Timeout
 
-      attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
+      attr_reader :addr_family, :read_timeout, :write_timeout, :resolver, :socket_class
 
       # Create a UDP socket matching the given socket's address family
       #
       # @param remote_addr [String] address to connect/bind to
+      #
       # @return [Socketry::UDP::Socket]
       def self.from_addr(remote_addr, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
         addr = resolver.resolve(remote_addr)
@@ -26,8 +27,8 @@ module Socketry
       # Bind to the given address and port
       #
       # @return [Socketry::UDP::Socket]
-      def self.bind(remote_addr, remote_port, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
-        from_addr(remote_addr, resolver: resolver).bind(remote_addr, remote_port)
+      def self.bind(local_addr, local_port, resolver: Socketry::Resolver::DEFAULT_RESOLVER)
+        from_addr(remote_addr, resolver: resolver).bind(local_addr, local_port)
       end
 
       # Connect to the given address and port
@@ -39,26 +40,32 @@ module Socketry
 
       # Create a new UDP socket
       #
+      # @param addr_family   [:ipv4, :ipv6] (default :ipv4) address family for this socket
+      # @param read_timeout  [Numeric] Seconds to wait before an uncompleted read errors
+      # @param write_timeout [Numeric] Seconds to wait before an uncompleted write errors
+      # @param timer         [Object]  A timekeeping object to use for measuring timeouts
+      # @param resolver      [Object]  A resolver object to use for resolving DNS names
+      # @param socket_class  [Object]  Underlying socket class which implements I/O ops
+      #
+      # @raise [ArgumentError] an invalid argument was given
+      #
       # @return [Socketry::UDP::Socket]
       def initialize(
-        family: :ipv4,
+        addr_family: :ipv4,
         read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
         write_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:write],
         timer: Socketry::Timeout::DEFAULT_TIMER.new,
         resolver: Socketry::Resolver::DEFAULT_RESOLVER,
         socket_class: ::UDPSocket
       )
-        case family
-        when :ipv4
-          @address_family = ::Socket::AF_INET
-        when :ipv6
-          @address_family = ::Socket::AF_INET6
-        when ::Socket::AF_INET, ::Socket::AF_INET6
-          @address_family = address_family
-        else raise ArgumentError, "invalid address family: #{address_family.inspect}"
-        end
+        @addr_family = case addr_family
+                       when :ipv4 then ::Socket::AF_INET
+                       when :ipv6 then ::Socket::AF_INET6
+                       when ::Socket::AF_INET, ::Socket::AF_INET6 then addr_family
+                       else raise ArgumentError, "invalid address family: #{addr_family.inspect}"
+                       end
 
-        @socket        = socket_class.new(@address_family)
+        @socket        = socket_class.new(@addr_family)
         @read_timeout  = read_timeout
         @write_timeout = write_timeout
         @resolver      = resolver
@@ -66,18 +73,24 @@ module Socketry
         start_timer(timer)
       end
 
-      # Bind to the given address and port
+      # Start a UDP server bound to a particular address and port
+      #
+      # @param local_addr [String] Local DNS name or IP address to listen on
+      # @param local_port [Fixnum] Local UDP port to listen on
       #
       # @return [self]
-      def bind(remote_addr, remote_port)
-        @socket.bind(@resolver.resolve(remote_addr), remote_port)
+      def bind(local_addr, local_port)
+        @socket.bind(@resolver.resolve(local_addr), local_port)
         self
       rescue => ex
         # TODO: more specific exceptions
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
-      # Create a new UDP socket
+      # Make a UDP client connection to the given address and port
+      #
+      # @param remote_addr [String] DNS name or IP address of the host to connect to
+      # @param remote_port [Fixnum] UDP port to connect to
       #
       # @return [self]
       def connect(remote_addr, remote_port)
@@ -90,7 +103,9 @@ module Socketry
 
       # Perform a non-blocking receive
       #
-      # @return [String, :wait_readable] received packet or indication to wait
+      # @param maxlen [Fixnum] Maximum packet length to receive
+      #
+      # @return [String, :wait_readable] Received packet or indication to wait
       def recvfrom_nonblock(maxlen)
         @socket.recvfrom_nonblock(maxlen)
       rescue ::IO::WaitReadable
@@ -102,7 +117,10 @@ module Socketry
 
       # Perform a blocking receive
       #
-      # @return [String] received data
+      # @param maxlen  [Fixnum] Maximum packet length to receive
+      # @param timeout [Numeric] Number of seconds to wait for recvfrom operation to complete
+      #
+      # @return [String] Received data
       def recvfrom(maxlen, timeout: @read_timeout)
         set_timeout(timeout)
 
@@ -118,9 +136,16 @@ module Socketry
         result
       end
 
-      # Send data to the given host and port
-      def send(msg, host:, port:)
-        @socket.send(msg, 0, @resolver.resolve(host), port)
+      # Send a UDP packet to a remote host
+      #
+      # @param msg  [String] Data to write to the remote host/port
+      # @param host [String] Remote host to send data to. May be omitted if `connect` was called previously
+      # @param port [Fixnum] UDP port to send data to. May be omitted if `connect` was called previously
+      #
+      # @return [Fixum] Number of bytes sent
+      def send(msg, host: nil, port: nil)
+        host = @resolver.resolve(host) if host
+        @socket.send(msg, 0, host, port)
       rescue => ex
         # TODO: more specific exceptions
         raise Socketry::Error, ex.message, ex.backtrace
