@@ -1,3 +1,7 @@
+## 0.5.1 (2016-11-26)
+
+* Fix regression in Socketry::SSL::Socket#close
+
 ## 0.5.0 (2016-11-26)
 
 * Require Ruby 2.2.6+ (earlier 2.2 versions had async I/O bugs)
