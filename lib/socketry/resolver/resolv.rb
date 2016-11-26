@@ -45,7 +45,7 @@ module Socketry
         when Integer, Float
           @resolver.timeouts = timeout
         when NilClass
-          # no timeout
+          nil # no timeout
         else raise TypeError, "expected Numeric, got #{timeout.class}"
         end
 
