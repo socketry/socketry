@@ -11,7 +11,9 @@
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-link]: https://github.com/socketry/socketry/blob/master/LICENSE.txt
 
-High-level wrappers for Ruby sockets with advanced thread-safe timeout support.
+High-level Ruby socket library with support for TCP, UDP, and SSL sockets.
+
+Implements thread-safe timeouts using asynchronous I/O and high-precision monotonic timers.
 
 ## Motivation
 
