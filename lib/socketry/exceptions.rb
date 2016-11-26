@@ -31,7 +31,10 @@ module Socketry
     # Errors related to SSL
     Error = Class.new(Socketry::Error)
 
+    # Certificate could not be verified
+    CertificateVerifyError = Class.new(Socketry::SSL::Error)
+
     # Hostname verification error
-    HostnameError = Class.new(Socketry::SSL::Error)
+    HostnameError = Class.new(CertificateVerifyError)
   end
 end

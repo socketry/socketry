@@ -37,7 +37,7 @@ Metrics/ClassLength:
   Max: 200
 
 Metrics/CyclomaticComplexity:
-  Max: 10
+  Max: 15
 
 Metrics/MethodLength:
   Max: 50
@@ -46,7 +46,7 @@ Metrics/ParameterLists:
   Enabled: false
 
 Metrics/PerceivedComplexity:
-  Max: 10
+  Max: 15
 
 #
 # Lint

@@ -63,10 +63,10 @@ RSpec.describe Socketry::SSL::Socket do
       let(:server_cert_file) { ssl_cert_path("untrusted-cert") }
       let(:server_key_file)  { ssl_key_path("untrusted-cert") }
 
-      it "raises an exception" do
+      it "raises a Socketry::SSL::CertificateVerifyError exception" do
         expect do
           ssl_socket.connect(remote_host, remote_port)
-        end.to raise_error(Socketry::SSL::Error)
+        end.to raise_error(Socketry::SSL::CertificateVerifyError)
       end
     end
 
