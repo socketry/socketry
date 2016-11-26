@@ -43,6 +43,8 @@ module Socketry
         end
 
         start_timer(timer)
+      rescue Errno::EADDRINUSE => ex
+        raise AddressInUseError, ex.message, ex.backtrace
       end
 
       # Accept a connection to the server

@@ -16,7 +16,7 @@ RSpec.describe Socketry::UDP::Socket do
   end
 
   describe "#bind" do
-    it "raises if an address is in use" do
+    it "raises Socketry::AddressInUseError if an address is in use" do
       # Create the UDP server
       udp_server
 
