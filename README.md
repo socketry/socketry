@@ -1,4 +1,6 @@
-# Socketry [![Gem Version][gem-image]][gem-link] [![Build Status][build-image]][build-link] [![Code Climate][codeclimate-image]][codeclimate-link] [![Coverage Status][coverage-image]][coverage-link] [![MIT licensed][license-image]][license-link]
+# ![Socketry](https://raw.github.com/socketry/socketry/master/logo.png)
+
+[![Gem Version][gem-image]][gem-link] [![Build Status][build-image]][build-link] [![Code Climate][codeclimate-image]][codeclimate-link] [![Coverage Status][coverage-image]][coverage-link] [![MIT licensed][license-image]][license-link]
 
 [gem-image]: https://badge.fury.io/rb/socketry.svg
 [gem-link]: https://rubygems.org/gems/socketry
