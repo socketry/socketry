@@ -113,23 +113,13 @@ module Socketry
       # @raise [Socketry::Error] an I/O operation failed
       # @return [String, :wait_readable] data read, or :wait_readable if operation would block
       def read_nonblock(size, outbuf: nil)
-        ensure_connected
         case outbuf
         when String
-          @ssl_socket.read_nonblock(size, outbuf, exception: false)
+          perform { @ssl_socket.read_nonblock(size, outbuf, exception: false) }
         when NilClass
-          @ssl_socket.read_nonblock(size, exception: false)
+          perform { @ssl_socket.read_nonblock(size, exception: false) }
         else raise TypeError, "unexpected outbuf class: #{outbuf.class}"
         end
-      # Some buggy Rubies continue to raise exceptions in these cases
-      rescue IO::WaitReadable
-        :wait_readable
-      # Due to SSL, we may need to write to complete a read (e.g. renegotiation)
-      rescue IO::WaitWritable
-        :wait_writable
-      rescue => ex
-        # TODO: more specific exceptions
-        raise Socketry::Error, ex.message, ex.backtrace
       end
 
       # Perform a non-blocking write operation
@@ -138,17 +128,7 @@ module Socketry
       # @raise [Socketry::Error] an I/O operation failed
       # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
       def write_nonblock(data)
-        ensure_connected
-        @ssl_socket.write_nonblock(data, exception: false)
-      # Some buggy Rubies continue to raise this exception
-      rescue IO::WaitWritable
-        :wait_writable
-      # Due to SSL, we may need to write to complete a read (e.g. renegotiation)
-      rescue IO::WaitReadable
-        :wait_readable
-      rescue => ex
-        # TODO: more specific exceptions
-        raise Socketry::Error, ex.message, ex.backtrace
+        perform { @ssl_socket.write_nonblock(data, exception: false) }
       end
 
       # Close the socket
@@ -157,6 +137,23 @@ module Socketry
       def close
         @ssl_socket.close rescue nil
         super
+      end
+
+      private
+
+      # Perform a non-blocking I/O operation
+      def perform
+        ensure_connected
+        yield
+      # Some buggy Rubies continue to raise this exception
+      rescue IO::WaitWritable
+        :wait_writable
+      # Due to SSL, we may need to write to complete a read (e.g. handshaking, renegotiation)
+      rescue IO::WaitReadable
+        :wait_readable
+      rescue => ex
+        # TODO: more specific exceptions
+        raise Socketry::Error, ex.message, ex.backtrace
       end
     end
   end
