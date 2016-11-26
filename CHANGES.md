@@ -1,3 +1,10 @@
+## 0.4.0 (2016-11-25)
+
+* Specs and bugfixes for SSL sockets
+* Specs and bugfixes for UDP sockets
+* Add Socketry::UDP::Datagram class
+* Add Socketry::AddressInUseError exception
+
 ## 0.3.0 (2016-09-24)
 
 * Implement Socketry::TCP::Socket#read and #write
