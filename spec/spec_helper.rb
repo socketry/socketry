@@ -88,7 +88,7 @@ RSpec.shared_examples "Socketry stream socket" do
 
     describe "#write" do
       it "writes complete data" do
-        expect(stream_socket.writepartial(example_data)).to eq example_data.size
+        expect(stream_socket.write(example_data)).to eq example_data.size
         expect(peer_socket.read(example_data.size)).to eq example_data
       end
     end
