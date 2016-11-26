@@ -25,12 +25,8 @@ While Socketry provides a synchronous, blocking API similar to Ruby's own
 `TCPSocket` and `UDPSocket` classes, behind the scenes it uses non-blocking I/O
 to implement thread-safe timeouts.
 
-Highly modular and pluggable, Socketry also provides the flexibility to
-seamlessly leverage [Celluloid::IO] for event-driven I/O.
-
 [timeout.rb]: http://ruby-doc.org/stdlib-2.3.1/libdoc/timeout/rdoc/Timeout.html
 [unsafe multithreaded behaviors]: http://blog.headius.com/2008/02/ruby-threadraise-threadkill-timeoutrb.html
-[Celluloid::IO]: https://github.com/celluloid/celluloid-io
 
 ## Installation
 
