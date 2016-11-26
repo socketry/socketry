@@ -7,7 +7,7 @@ module Socketry
     class Socket
       include Socketry::Timeout
 
-      attr_reader :remote_addr, :remote_port, :local_addr, :local_port
+      attr_reader :addr_fmaily, :remote_addr, :remote_port, :local_addr, :local_port
       attr_reader :read_timeout, :write_timeout, :resolver, :socket_class
 
       # Create a Socketry::TCP::Socket with the default options, then connect
@@ -15,6 +15,7 @@ module Socketry
       #
       # @param remote_addr [String] DNS name or IP address of the host to connect to
       # @param remote_port [Fixnum] TCP port to connect to
+      #
       # @return [Socketry::TCP::Socket]
       def self.connect(remote_addr, remote_port, **args)
         new.connect(remote_addr, remote_port, **args)
@@ -27,6 +28,7 @@ module Socketry
       # @param timer         [Object]  A timekeeping object to use for measuring timeouts
       # @param resolver      [Object]  A resolver object to use for resolving DNS names
       # @param socket_class  [Object]  Underlying socket class which implements I/O ops
+      #
       # @return [Socketry::TCP::Socket]
       def initialize(
         read_timeout: Socketry::Timeout::DEFAULT_TIMEOUTS[:read],
@@ -41,7 +43,7 @@ module Socketry
         @socket_class = socket_class
         @resolver = resolver
 
-        @family = nil
+        @addr_family = nil
         @socket = nil
 
         @remote_addr = nil
@@ -59,8 +61,10 @@ module Socketry
       # @param local_addr   [String]  DNS name or IP address to bind to locally
       # @param local_port   [Fixnum]  Local TCP port to bind to
       # @param timeout      [Numeric] Number of seconds to wait before aborting connect
+      #
       # @raise [Socketry::AddressError] an invalid address was given
       # @raise [Socketry::TimeoutError] connect operation timed out
+      #
       # @return [self]
       def connect(
         remote_addr,
@@ -83,12 +87,12 @@ module Socketry
           local_addr  = @resolver.resolve(local_addr,  timeout: time_remaining(timeout)) if local_addr
           raise ArgumentError, "expected IPAddr from resolver, got #{remote_addr.class}" unless remote_addr.is_a?(IPAddr)
 
-          @family = if remote_addr.ipv4?    then ::Socket::AF_INET
-                    elsif remote_addr.ipv6? then ::Socket::AF_INET6
-                    else raise Socketry::AddressError, "unsupported IP address family: #{remote_addr}"
-                    end
+          @addr_family = if remote_addr.ipv4?    then ::Socket::AF_INET
+                         elsif remote_addr.ipv6? then ::Socket::AF_INET6
+                         else raise Socketry::AddressError, "unsupported IP address family: #{remote_addr}"
+                         end
 
-          socket = @socket_class.new(@family, ::Socket::SOCK_STREAM, 0)
+          socket = @socket_class.new(@addr_family, ::Socket::SOCK_STREAM, 0)
           socket.bind Addrinfo.tcp(local_addr.to_s, local_port) if local_addr
           remote_sockaddr = ::Socket.sockaddr_in(remote_port, remote_addr.to_s)
 
@@ -140,7 +144,9 @@ module Socketry
       #
       # @param size [Fixnum] number of bytes to attempt to read
       # @param outbuf [String, NilClass] an optional buffer into which data should be read
+      #
       # @raise [Socketry::Error] an I/O operation failed
+      #
       # @return [String, :wait_readable] data read, or :wait_readable if operation would block
       def read_nonblock(size, outbuf: nil)
         ensure_connected
@@ -185,7 +191,9 @@ module Socketry
       # @param size [Fixnum] number of bytes to attempt to read
       # @param outbuf [String] an output buffer to read data into
       # @param timeout [Numeric] Number of seconds to wait for read operation to complete
+      #
       # @raise [Socketry::Error] an I/O operation failed
+      #
       # @return [String, :eof] bytes read, or :eof if socket closed while reading
       def read(size, outbuf: String.new, timeout: @write_timeout)
         outbuf.clear
@@ -209,7 +217,9 @@ module Socketry
       # Perform a non-blocking write operation
       #
       # @param data [String] data to write to the socket
+      #
       # @raise [Socketry::Error] an I/O operation failed
+      #
       # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
       def write_nonblock(data)
         ensure_connected
@@ -246,7 +256,9 @@ module Socketry
       #
       # @param data [String] data to write to the socket
       # @param timeout [Numeric] Number of seconds to wait for write operation to complete
+      #
       # @raise [Socketry::Error] an I/O operation failed
+      #
       # @return [Fixnum] number of bytes written, or :eof if socket closed during writing
       def write(data, timeout: @write_timeout)
         total_written = data.size
