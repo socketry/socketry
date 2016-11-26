@@ -70,6 +70,30 @@ for more detailed documentation and usage notes.
 [YARD API documentation](http://www.rubydoc.info/gems/socketry/)
 is also available.
 
+## Supported Ruby Versions
+
+This library aims to support and is [tested against][travis] the following Ruby
+versions:
+
+* Ruby 2.2.6+
+* Ruby 2.3.x
+* JRuby 9.1.6.0+
+
+If something doesn't work on one of these versions, it's a bug.
+
+This library may inadvertently work (or seem to work) on other Ruby versions,
+however support will only be provided for the versions listed above.
+
+If you would like this library to support another Ruby version or
+implementation, you may volunteer to be a maintainer. Being a maintainer
+entails making sure all tests run and pass on that implementation. When
+something breaks on your implementation, you will be responsible for providing
+patches in a timely fashion. If critical issues for a particular implementation
+exist at the time of a major release, support for that Ruby version may be
+dropped.
+
+[travis]: http://travis-ci.org/socketry/socketry
+
 ## Contributing
 
 * Fork this repository on github
