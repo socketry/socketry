@@ -61,6 +61,7 @@ module Socketry
 
         @ssl_socket = OpenSSL::SSL::SSLSocket.new(@socket, @ssl_context)
         @ssl_socket.hostname = remote_addr if enable_sni
+        @ssl_socket.sync_close = true
 
         begin
           @ssl_socket.connect_nonblock
@@ -91,15 +92,14 @@ module Socketry
 
       # Wrap a Ruby OpenSSL::SSL::SSLSocket (or other low-level SSL socket)
       #
-      # @param socket [::Socket] (or specified socket_class) low-level socket to wrap
       # @param ssl_socket [OpenSSL::SSL::SSLSocket] SSL socket class associated with this socket
+      #
       # @return [self]
-      def from_socket(socket, ssl_socket)
-        raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
+      def from_socket(ssl_socket)
         raise TypeError, "expected #{@ssl_socket_class}, got #{ssl_socket.class}" unless ssl_socket.is_a?(@ssl_socket_class)
-        raise StateError, "already connected" if @socket && @socket != socket
+        raise StateError, "already connected" if @socket
 
-        @socket = socket
+        @socket = ssl_socket.to_io
         @ssl_socket = ssl_socket
         @ssl_socket.sync_close = true
 
@@ -110,6 +110,7 @@ module Socketry
       #
       # @param size [Fixnum] number of bytes to attempt to read
       # @param outbuf [String, NilClass] an optional buffer into which data should be read
+      #
       # @raise [Socketry::Error] an I/O operation failed
       # @return [String, :wait_readable] data read, or :wait_readable if operation would block
       def read_nonblock(size, outbuf: nil)
@@ -125,6 +126,7 @@ module Socketry
       # Perform a non-blocking write operation
       #
       # @param data [String] number of bytes to attempt to read
+      #
       # @raise [Socketry::Error] an I/O operation failed
       # @return [Fixnum, :wait_writable] number of bytes written, or :wait_writable if op would block
       def write_nonblock(data)

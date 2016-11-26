@@ -78,7 +78,26 @@ RSpec.describe Socketry::SSL::Socket do
   end
 
   describe "#from_socket" do
-    it "needs tests!"
+    let(:server_cert_file) { ssl_cert_path("trusted-cert") }
+    let(:server_key_file)  { ssl_key_path("trusted-cert") }
+
+    before { ssl_server_thread }
+
+    after do
+      ssl_server_thread.kill if ssl_server_thread.alive?
+      ssl_server.close rescue nil
+    end
+
+    it "creates SSL sockets from TCP sockets" do
+      ssl_context = OpenSSL::SSL::SSLContext.new
+      ssl_context.set_params(ssl_client_params)
+      tcp_socket = ::TCPSocket.new(remote_host, remote_port)
+      ssl_socket = OpenSSL::SSL::SSLSocket.new(tcp_socket, ssl_context)
+      ssl_socket.connect
+
+      expect(described_class.new.from_socket(ssl_socket)).to be_a described_class
+      ssl_socket.close
+    end
   end
 
   context "stream socket specs" do
