@@ -15,6 +15,7 @@ module Socketry
       # @param ssl_socket_class [Object] Class which provides the underlying SSL implementation
       # @param ssl_context [OpenSSL::SSL::SSLContext] SSL configuration object
       # @param ssL_params [Hash] Parameter hash to set on the given SSL context
+      #
       # @return [Socketry::SSL::Socket]
       def initialize(
         ssl_socket_class: OpenSSL::SSL::SSLSocket,
@@ -44,6 +45,7 @@ module Socketry
       # @param timeout [Numeric] Number of seconds to wait before aborting connect
       # @param enable_sni [true, false] (default: true) Enables Server Name Indication (SNI)
       # @param verify_hostname [true, false] (default: true) Ensure server's hostname matches cert
+      #
       # @raise [Socketry::AddressError] an invalid address was given
       # @raise [Socketry::TimeoutError] connect operation timed out
       # @raise [Socketry::SSL::Error] an error occurred negotiating an SSL connection
@@ -59,7 +61,7 @@ module Socketry
       )
         super(remote_addr, remote_port, local_addr: local_addr, local_port: local_port, timeout: timeout)
 
-        @ssl_socket = OpenSSL::SSL::SSLSocket.new(@socket, @ssl_context)
+        @ssl_socket = @ssl_socket_class.new(@socket, @ssl_context)
         @ssl_socket.hostname = remote_addr if enable_sni
         @ssl_socket.sync_close = true
 
@@ -88,6 +90,29 @@ module Socketry
         @ssl_socket.close rescue nil
         @ssl_socket = nil
         raise ex
+      end
+
+      # Accept an SSL connection from a Socketry or Ruby socket
+      #
+      # @param tcp_socket [TCPSocket, Socketry::TCP::Socket] raw TCP socket to begin SSL handshake with
+      # @param timeout [Numeric, NilClass] (default nil, unlimited) seconds to wait before aborting the accept
+      #
+      # @return [self]
+      def accept(tcp_socket, timeout: nil)
+        tcp_socket = IO.try_convert(tcp_socket) || raise(TypeError, "couldn't convert #{tcp_socket.class} to IO")
+        ssl_socket = @ssl_socket_class.new(tcp_socket, @ssl_context)
+
+        begin
+          ssl_socket.accept_nonblock
+        rescue IO::WaitReadable
+          retry if IO.select([tcp_socket], nil, nil, timeout)
+          raise Socketry::TimeoutError, "failed to complete handshake after #{timeout} seconds"
+        rescue IO::WaitWritable
+          retry if IO.select(nil, [tcp_socket], nil, timeout)
+          raise Socketry::TimeoutError, "failed to complete handshake after #{timeout} seconds"
+        end
+
+        from_socket(ssl_socket)
       end
 
       # Wrap a Ruby OpenSSL::SSL::SSLSocket (or other low-level SSL socket)

@@ -12,15 +12,13 @@ module Socketry
         hostname_or_port,
         port = nil,
         ssl_socket_class: OpenSSL::SSL::SSLSocket,
-        ssl_context_class: OpenSSL::SSL::SSLContext,
         ssl_params: nil,
         **args
       )
         raise TypeError, "expected Hash, got #{ssl_params.class}" if ssl_params && !ssl_params.is_a?(Hash)
 
         @ssl_socket_class = ssl_socket_class
-        @ssl_context_class = ssl_context_class
-        @ssl_params = ssl_params || {}
+        @ssl_params = ssl_params
 
         super(hostname_or_port, port, **args)
       end
@@ -34,30 +32,21 @@ module Socketry
       # to ensure a slow/malicious connection can't cause a denial-of-service
       # attack against the server.
       #
-      # @param timeout [Numeric, NilClass] seconds to wait before aborting the accept
+      # @param timeout [Numeric, NilClass] (default nil, unlimited) seconds to wait before aborting the accept
+      #
       # @return [Socketry::SSL::Socket]
       def accept(timeout: nil, **args)
-        ruby_socket = super(timeout: timeout, **args).to_io
-        ssl_context = @ssl_context_class.new
-        ssl_context.set_params(@ssl_params) unless @ssl_params.empty?
-        ssl_socket = @ssl_socket_class.new(ruby_socket, ssl_context)
+        tcp_socket = super(timeout: timeout, **args)
 
-        begin
-          ssl_socket.accept_nonblock
-        rescue IO::WaitReadable
-          retry if IO.select([ruby_socket], nil, nil, timeout)
-          raise Socketry::TimeoutError, "failed to complete handshake after #{timeout} seconds"
-        rescue IO::WaitWritable
-          retry if IO.select(nil, [ruby_socket], nil, timeout)
-          raise Socketry::TimeoutError, "failed to complete handshake after #{timeout} seconds"
-        end
+        ssl_socket = Socketry::SSL::Socket.new(
+          read_timeout:     @read_timeout,
+          write_timeout:    @write_timeout,
+          resolver:         @resolver,
+          ssl_socket_class: @ssl_socket_class,
+          ssl_params:       @ssl_params
+        )
 
-        Socketry::SSL::Socket.new(
-          read_timeout:  @read_timeout,
-          write_timeout: @write_timeout,
-          resolver:      @resolver,
-          socket_class:  @socket_class
-        ).from_socket(ssl_socket)
+        ssl_socket.accept(tcp_socket, timeout: timeout)
       end
     end
   end

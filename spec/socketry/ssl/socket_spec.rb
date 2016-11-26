@@ -77,6 +77,10 @@ RSpec.describe Socketry::SSL::Socket do
     it "needs tests!"
   end
 
+  describe "#accept" do
+    it "needs tests!"
+  end
+
   describe "#from_socket" do
     let(:server_cert_file) { ssl_cert_path("trusted-cert") }
     let(:server_key_file)  { ssl_key_path("trusted-cert") }
