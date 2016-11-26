@@ -76,7 +76,7 @@ This library aims to support and is [tested against][travis] the following Ruby
 versions:
 
 * Ruby 2.2.6+
-* Ruby 2.3.x
+* Ruby 2.3.0+
 * JRuby 9.1.6.0+
 
 If something doesn't work on one of these versions, it's a bug.
