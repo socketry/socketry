@@ -163,8 +163,10 @@ module Socketry
       #
       # @return [true, false] true if the socket was open, false if closed
       def close
-        @ssl_socket.close rescue nil
-        super
+        return false unless super
+        @ssl_socket.close
+        @ssl_socket = nil
+        true
       end
 
       private
