@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "resolv"
+
 module Socketry
   module Resolver
     # Pure Ruby DNS resolver provided by the standard library
