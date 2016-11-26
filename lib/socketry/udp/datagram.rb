@@ -5,14 +5,14 @@ module Socketry
   module UDP
     # Represents a received UDP message
     class Datagram
-      attr_reader :message, :sockaddr, :host, :addr, :port
+      attr_reader :message, :sockaddr, :remote_host, :remote_addr, :remote_port
 
       def initialize(message, sockaddr)
         @message  = message
         @sockaddr = sockaddr
-        @port     = sockaddr[1]
-        @host     = sockaddr[2]
-        @addr     = sockaddr[3]
+        @remote_port = sockaddr[1]
+        @remote_host = sockaddr[2]
+        @remote_addr = sockaddr[3]
       end
 
       def addrinfo
