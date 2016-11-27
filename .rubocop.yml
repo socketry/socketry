@@ -2,11 +2,43 @@ AllCops:
   DisplayCopNames: true
 
 #
-# Style
+# Lint
 #
 
-LineLength:
+Lint/HandleExceptions:
+  Enabled: false
+
+Lint/ShadowedException:
+  Enabled: false
+
+#
+# Metrics
+#
+
+Metrics/AbcSize:
+  Max: 50
+
+Metrics/ClassLength:
+  Max: 200
+
+Metrics/CyclomaticComplexity:
+  Max: 15
+
+Metrics/LineLength:
   Max: 128
+
+Metrics/MethodLength:
+  Max: 50
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Max: 15
+
+#
+# Style
+#
 
 Style/AccessorMethodName:
   Enabled: false
@@ -25,35 +57,3 @@ Style/SpaceBeforeFirstArg:
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
-
-#
-# Metrics
-#
-
-Metrics/AbcSize:
-  Max: 50
-
-Metrics/ClassLength:
-  Max: 200
-
-Metrics/CyclomaticComplexity:
-  Max: 15
-
-Metrics/MethodLength:
-  Max: 50
-
-Metrics/ParameterLists:
-  Enabled: false
-
-Metrics/PerceivedComplexity:
-  Max: 15
-
-#
-# Lint
-#
-
-Lint/HandleExceptions:
-  Enabled: false
-
-Lint/ShadowedException:
-  Enabled: false
