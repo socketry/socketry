@@ -224,7 +224,7 @@ module Socketry
       def write_nonblock(data)
         ensure_connected
         @socket.write_nonblock(data, exception: false)
-      rescue IO::WaitWriteable
+      rescue IO::WaitWritable
         # Some buggy Rubies continue to raise this exception
         :wait_writable
       rescue IOError => ex
