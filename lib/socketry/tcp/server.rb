@@ -54,23 +54,31 @@ module Socketry
       def accept(timeout: nil)
         set_timeout(timeout)
 
-        begin
-          # Note: `exception: false` for TCPServer#accept_nonblock is only supported in Ruby 2.3+
-          ruby_socket = @server.accept_nonblock
-        rescue IO::WaitReadable, Errno::EAGAIN
+        while (socket = accept_nonblock) == :wait_readable
           # Ruby 2.2 has trouble using io/wait here
-          retry if IO.select([@server], nil, nil, time_remaining(timeout))
+          next if IO.select([@server], nil, nil, time_remaining(timeout))
           raise Socketry::TimeoutError, "no connection received after #{timeout} seconds"
         end
 
+        socket
+      ensure
+        clear_timeout(timeout)
+      end
+
+      # Accept a connection to the server in a non-blocking manner
+      #
+      # @return [Socketry::TCP::Socket, :wait_readable] newly accepted socket or indication to wait
+      def accept_nonblock
+        # Note: `exception: false` for TCPServer#accept_nonblock is only supported in Ruby 2.3+
+        # TODO: Switch to `exception: false` when we drop support for Ruby 2.2.
         Socketry::TCP::Socket.new(
           read_timeout:  @read_timeout,
           write_timeout: @write_timeout,
           resolver:      @resolver,
           socket_class:  @socket_class
-        ).from_socket(ruby_socket)
-      ensure
-        clear_timeout(timeout)
+        ).from_socket(@server.accept_nonblock)
+      rescue IO::WaitReadable, Errno::EAGAIN
+        :wait_readable
       end
 
       # Close the server
