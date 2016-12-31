@@ -48,4 +48,24 @@ RSpec.describe Socketry::TCP::Server do
       expect { tcp_server.accept(timeout: 0.00001) }.to raise_error Socketry::TimeoutError
     end
   end
+
+  describe "#accept_nonblock" do
+    before { tcp_server }
+    after  { tcp_server.close rescue nil }
+
+    it "accepts connections in a non-blocking manner" do
+      begin
+        client = TCPSocket.new(bind_addr, bind_port)
+        peer = tcp_server.accept_nonblock
+        expect(peer).to be_a Socketry::TCP::Socket
+      ensure
+        client.close rescue nil
+        peer.close rescue nil
+      end
+    end
+
+    it "returns :wait_readable if there is no pending client connection" do
+      expect(tcp_server.accept_nonblock).to eq :wait_readable
+    end
+  end
 end
