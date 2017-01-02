@@ -4,8 +4,14 @@ module Socketry
   # Generic catch all for all Socketry errors
   Error = Class.new(StandardError)
 
-  # Failed to connect to a remote host
-  ConnectionRefusedError = Class.new(Socketry::Error)
+  # Failed to connect to a host
+  ConnectError = Class.new(Socketry::Error)
+
+  # Remote host confused connection
+  ConnectionRefusedError = Class.new(Socketry::ConnectError)
+
+  # Requested host is down
+  HostDownError = Class.new(Socketry::ConnectError)
 
   # Invalid address
   AddressError = Class.new(Socketry::Error)

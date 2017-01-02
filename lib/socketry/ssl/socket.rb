@@ -86,10 +86,7 @@ module Socketry
 
         self
       rescue => ex
-        @socket.close rescue nil
-        @socket = nil
-        @ssl_socket.close rescue nil
-        @ssl_socket = nil
+        close
         raise ex
       end
 
@@ -164,6 +161,8 @@ module Socketry
       # @return [true, false] true if the socket was open, false if closed
       def close
         return false unless super
+        return true unless @ssl_socket
+
         @ssl_socket.close
         @ssl_socket = nil
         true
@@ -173,7 +172,7 @@ module Socketry
 
       # Perform a non-blocking I/O operation
       def perform
-        ensure_connected
+        ensure_state :connected
         yield
       # Some buggy Rubies continue to raise this exception
       rescue IO::WaitWritable

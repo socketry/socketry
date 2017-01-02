@@ -24,12 +24,14 @@ RSpec.describe Socketry::SSL::Server do
   after  { ssl_server.close rescue nil }
 
   describe "#accept" do
+    let(:timeout) { 1 }
+
     it "accepts connections" do
       begin
         server_thread = Thread.new { ssl_server.accept }
         ssl_client = Socketry::SSL::Socket.new(ssl_params: ssl_client_params)
         ssl_client.connect(bind_addr, bind_port)
-        peer_socket = server_thread.join(1).value
+        peer_socket = server_thread.join(timeout).value
         expect(peer_socket).to be_a Socketry::SSL::Socket
       ensure
         client.close rescue nil

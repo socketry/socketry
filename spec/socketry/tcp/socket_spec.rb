@@ -4,6 +4,7 @@ RSpec.describe Socketry::TCP::Socket do
   it_behaves_like "Socketry stream socket"
 
   let(:remote_host) { "localhost" }
+  let(:remote_addr) { "127.0.0.1" }
   let(:remote_port) { unoccupied_port(addr: remote_host) }
 
   let(:mock_server) { ::TCPServer.new(remote_host, remote_port) }
@@ -31,6 +32,22 @@ RSpec.describe Socketry::TCP::Socket do
         described_class.new.connect(remote_host, unoccupied_port(addr: remote_host))
       end.to raise_error(Socketry::ConnectionRefusedError)
     end
+  end
+
+  describe "#connect_nonblock" do
+    it "initiates non-blocking connect to TCP servers" do
+      expect(described_class.new.connect_nonblock(remote_addr, remote_port)).to eq :wait_writable
+    end
+
+    it "raises Socketry::AddressError if given a hostname instead of an IP address" do
+      expect do
+        described_class.new.connect_nonblock(remote_host, remote_port)
+      end.to raise_error(Socketry::AddressError)
+    end
+  end
+
+  describe "#complete_connect_nonblock" do
+    it "needs tests!"
   end
 
   describe "#reconnect" do
