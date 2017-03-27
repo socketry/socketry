@@ -1,4 +1,4 @@
-# ![Socketry](https://raw.github.com/socketry/socketry/master/logo.png)
+#![Socketry](https://raw.githubusercontent.com/socketry/logos/master/socketry.png)
 
 [![Gem Version][gem-image]][gem-link] [![Build Status][build-image]][build-link] [![Code Climate][codeclimate-image]][codeclimate-link] [![Coverage Status][coverage-image]][coverage-link] [![MIT licensed][license-image]][license-link]
 
