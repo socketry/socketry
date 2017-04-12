@@ -17,7 +17,7 @@ module Socketry
     # @param timer [#start, #to_f] a timer object (ideally monotonic)
     # @return [true] timer started successfully
     # @raise [Socketry::InternalError] if timer is already started
-    def start_timer(timer = DEFAULT_TIMER_CLASS.new)
+    def start_timer(timer = DEFAULT_TIMER.new)
       raise Socketry::InternalError, "timer already started" if defined?(@timer)
       raise Socketry::InternalError, "deadline already set"  if defined?(@deadline)
 
