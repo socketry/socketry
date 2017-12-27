@@ -1,5 +1,6 @@
 AllCops:
   DisplayCopNames: true
+  TargetRubyVersion: 2.2
 
 #
 # Lint
@@ -12,11 +13,21 @@ Lint/ShadowedException:
   Enabled: false
 
 #
+# Layout
+#
+
+Layout/SpaceBeforeFirstArg:
+  Enabled: false
+
+#
 # Metrics
 #
 
 Metrics/AbcSize:
   Max: 50
+
+Metrics/BlockLength:
+  Max: 100
 
 Metrics/ClassLength:
   Max: 250
@@ -37,14 +48,21 @@ Metrics/PerceivedComplexity:
   Max: 15
 
 #
+# Naming
+#
+
+Naming/AccessorMethodName:
+  Enabled: false
+
+#
 # Style
 #
 
-Style/AccessorMethodName:
-  Enabled: false
-
 Style/ConditionalAssignment:
   Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
 
 Style/NumericPredicate:
   Enabled: false
@@ -52,7 +70,7 @@ Style/NumericPredicate:
 Style/RescueModifier:
   Enabled: false
 
-Style/SpaceBeforeFirstArg:
+Style/RescueStandardError:
   Enabled: false
 
 Style/StringLiterals:

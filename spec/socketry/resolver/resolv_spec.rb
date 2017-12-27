@@ -9,7 +9,7 @@ RSpec.describe Socketry::Resolver::Resolv, online: true do
     subject(:resolver) { described_class.new }
 
     it "resolves DNS requests to Resolv addresses" do
-      %w(localhost travis-ci.org).each do |hostname|
+      %w[localhost travis-ci.org].each do |hostname|
         expect(resolver.resolve(hostname)).to be_a IPAddr
       end
     end
