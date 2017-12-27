@@ -266,7 +266,7 @@ module Socketry
       # @raise [Socketry::Error] an I/O operation failed
       #
       # @return [String, :eof] bytes read, or :eof if socket closed while reading
-      def read(size, outbuf: String.new, timeout: @write_timeout)
+      def read(size, outbuf: "".b, timeout: @write_timeout)
         outbuf.clear
         deadline = lifetime + timeout if timeout
 
