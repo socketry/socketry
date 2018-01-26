@@ -235,7 +235,7 @@ module Socketry
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
-      # Read a partial amounth of data, blocking until it becomes available
+      # Read a partial amount of data, blocking until it becomes available
       #
       # @param size [Fixnum] number of bytes to attempt to read
       # @param outbuf [String] an output buffer to read data into
@@ -302,7 +302,7 @@ module Socketry
         raise Socketry::Error, ex.message, ex.backtrace
       end
 
-      # Write a partial amounth of data, blocking until it's completed
+      # Write a partial amount of data, blocking until it's completed
       #
       # @param data [String] data to write to the socket
       # @param timeout [Numeric] Number of seconds to wait for write operation to complete
