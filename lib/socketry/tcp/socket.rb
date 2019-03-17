@@ -204,6 +204,7 @@ module Socketry
       def from_socket(socket)
         ensure_state :disconnected
         raise TypeError, "expected #{@socket_class}, got #{socket.class}" unless socket.is_a?(@socket_class)
+
         @socket = socket
         @state  = :connected
 
@@ -248,6 +249,7 @@ module Socketry
         begin
           while (result = read_nonblock(size, outbuf: outbuf)) == :wait_readable
             next if @socket.wait_readable(time_remaining(timeout))
+
             raise TimeoutError, "read timed out after #{timeout} seconds"
           end
         ensure
@@ -314,6 +316,7 @@ module Socketry
         begin
           while (result = write_nonblock(data)) == :wait_writable
             next if @socket.wait_writable(time_remaining(timeout))
+
             raise TimeoutError, "write timed out after #{timeout} seconds"
           end
         ensure
@@ -344,6 +347,7 @@ module Socketry
             return :eof if bytes_written == :eof
 
             break if bytes_written == data.bytesize
+
             data = data.byteslice(bytes_written..-1)
           end
         end
@@ -432,14 +436,17 @@ module Socketry
         when :connecting
           raise "@socket is unset in #{@state} state" unless @socket
           raise(StateError, "not in the disconnected state (actual: #{@state})") unless @state == :disconnected
+
           @state = :connecting
         when :connected
           raise "@socket is unset in #{@state} state" unless @socket
           raise(StateError, "not in the connecting state (actual: #{@state})") unless @state == :connecting
+
           @state = :connected
         when :disconnected
           raise "@socket is still set while disconnecting (in #{@state} state)" if @socket
           raise(StateError, "already in the disconnected state") if @state == :disconnected
+
           @state = :disconnected
         else raise ArgumentError, "bad state argument: #{state.inspect}"
         end

@@ -75,6 +75,7 @@ module Socketry
           raise Socketry::TimeoutError, "connection to #{remote_addr}:#{remote_port} timed out"
         rescue OpenSSL::SSL::SSLError => ex
           raise Socketry::SSL::CertificateVerifyError, ex.message if ex.message.include?("certificate verify failed")
+
           raise Socketry::SSL::Error, ex.message, ex.backtrace
         end
 

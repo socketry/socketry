@@ -39,11 +39,11 @@ module Socketry
         tcp_socket = super(timeout: timeout, **args)
 
         ssl_socket = Socketry::SSL::Socket.new(
-          read_timeout:     @read_timeout,
-          write_timeout:    @write_timeout,
-          resolver:         @resolver,
+          read_timeout: @read_timeout,
+          write_timeout: @write_timeout,
+          resolver: @resolver,
           ssl_socket_class: @ssl_socket_class,
-          ssl_params:       @ssl_params
+          ssl_params: @ssl_params
         )
 
         ssl_socket.accept(tcp_socket, timeout: timeout)

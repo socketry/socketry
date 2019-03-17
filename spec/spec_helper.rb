@@ -3,7 +3,7 @@
 require "coveralls"
 Coveralls.wear!
 
-$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "socketry"
 
 RSpec.configure(&:disable_monkey_patching!)

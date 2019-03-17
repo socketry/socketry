@@ -14,7 +14,7 @@ RSpec.describe Socketry::SSL::Server do
   let(:ssl_server_params) do
     {
       cert: OpenSSL::X509::Certificate.new(server_cert_file.read),
-      key:  OpenSSL::PKey::RSA.new(server_key_file.read)
+      key: OpenSSL::PKey::RSA.new(server_key_file.read)
     }
   end
 
