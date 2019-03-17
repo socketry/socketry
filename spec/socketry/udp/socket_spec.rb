@@ -13,6 +13,12 @@ RSpec.describe Socketry::UDP::Socket do
     it "creates new sockets" do
       expect(described_class.new).to be_a described_class
     end
+
+    it "refuses invalid address families" do
+      expect do
+        described_class.new(addr_family: :foo)
+      end.to raise_error(ArgumentError, "invalid address family: :foo")
+    end
   end
 
   describe "#bind" do
