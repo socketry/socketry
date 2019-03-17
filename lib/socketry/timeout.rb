@@ -7,8 +7,8 @@ module Socketry
 
     # Default timeouts (in seconds)
     DEFAULT_TIMEOUTS = {
-      read:    5,
-      write:   5,
+      read: 5,
+      write: 5,
       connect: 5
     }.freeze
 
@@ -33,6 +33,7 @@ module Socketry
     # @raise [Socketry::InternalError] if timer has not been started
     def lifetime
       raise Socketry::InternalError, "timer not started" unless @timer
+
       @timer.to_f
     end
 
@@ -56,6 +57,7 @@ module Socketry
     def clear_timeout(timeout)
       return unless timeout
       raise Socketry::InternalError, "no deadline set" unless @deadline
+
       @deadline = nil
     end
 
@@ -68,8 +70,10 @@ module Socketry
     def time_remaining(timeout)
       return unless timeout
       raise Socketry::InternalError, "no deadline set" unless @deadline
+
       remaining = @deadline - lifetime
       raise Socketry::TimeoutError, "time expired" if remaining <= 0
+
       remaining
     end
   end

@@ -39,7 +39,8 @@ module Socketry
       # @raise [Socketry::AddressError] the name was resolved to an unsupported address
       def resolve(hostname, timeout: nil)
         raise TypeError, "expected String, got #{hostname.class}" unless hostname.is_a?(String)
-        return IPAddr.new(@hosts.getaddress(hostname).sub(/%.*$/, ""))
+
+        IPAddr.new(@hosts.getaddress(hostname).sub(/%.*$/, ""))
       rescue ::Resolv::ResolvError
         case timeout
         when Integer, Float

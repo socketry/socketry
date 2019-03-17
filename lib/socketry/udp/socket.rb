@@ -135,6 +135,7 @@ module Socketry
         begin
           while (result = recvfrom_nonblock(maxlen)) == :wait_readable
             next if @socket.wait_readable(time_remaining(timeout))
+
             raise Socketry::TimeoutError, "recvfrom timed out after #{timeout} seconds"
           end
         ensure
@@ -168,6 +169,7 @@ module Socketry
       # @return [true, false] true if the socket was open, false if closed
       def close
         return false if closed?
+
         @socket.close
         true
       ensure
