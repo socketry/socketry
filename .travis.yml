@@ -16,6 +16,17 @@ rvm:
 matrix:
   fast_finish: true
 
+jobs:
+  include:
+    - stage: linting
+      rvm: ruby-2.4.1 # Pre-installed on TravisCI
+      install: true # Do not bundle install
+      script: gem install rubocop --no-document && rubocop
+
+stages:
+  - linting
+  - test
+
 branches:
   only:
     - master
