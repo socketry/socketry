@@ -12,7 +12,7 @@ end
 group :test do
   gem "coveralls", require: false
   gem "rspec", "~> 3.7", require: false
-  gem "rubocop", "0.52.1", require: false
+  gem "rubocop", "= 0.65.0", require: false
 end
 
 group :development, :test do
