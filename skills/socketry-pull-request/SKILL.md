@@ -12,6 +12,9 @@ Use this skill when preparing commits or pull requests for Socketry projects.
 - Pull request titles must use Markdown and end with a full stop.
 - Pull request titles must be complete sentences.
 - Commit messages must use Markdown and end with a full stop.
+- The first line of a commit message must focus on what was changed.
+- Most commit messages should only be a single line.
+- Relevant context should be retained in the code itself, such as comments, rather than using the commit message as a side channel for important details.
 - Commit messages must not include agent links, attribution footers, generated-by annotations, or similar metadata.
 
 ## Pull Request Description
