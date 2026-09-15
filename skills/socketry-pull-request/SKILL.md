@@ -43,7 +43,7 @@ If downstream dependencies are directly affected by the change, add them as exte
 
 ## Release Notes
 
-If the change is user visible, add an `## Unreleased` release note which briefly describes the change.
+If the change is user visible, add a brief release note following the `bake-releases` documentation.
 
 ## Issue Type
 
