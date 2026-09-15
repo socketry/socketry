@@ -1,0 +1,22 @@
+# frozen_string_literal: true
+
+require_relative "lib/socketry/version"
+
+Gem::Specification.new do |spec|
+	spec.name = "socketry"
+	spec.version = Socketry::VERSION
+	
+	spec.summary = "Socketry project metadata and agent skills."
+	spec.authors = ["Samuel Williams"]
+	spec.license = "MIT"
+	
+	spec.homepage = "https://github.com/socketry/socketry"
+	
+	spec.metadata = {
+		"funding_uri" => "https://github.com/sponsors/ioquatix/",
+		"source_code_uri" => "https://github.com/socketry/socketry.git",
+	}
+	
+	spec.files = Dir.glob(["{lib,skills}/**/*", "*.md"], File::FNM_DOTMATCH, base: __dir__)
+	spec.required_ruby_version = ">= 3.2"
+end
