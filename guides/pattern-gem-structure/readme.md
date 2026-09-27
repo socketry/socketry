@@ -76,7 +76,7 @@ Maintain `spec.files` as the list of files users need. Include `context/` when d
 
 ## `gems.rb`
 
-`gems.rb` is the Bundler manifest for working on the project. The `gemspec` directive includes the local gem and its runtime dependencies. Group test tools together and put release, documentation, and maintenance tools in an optional maintenance group:
+`gems.rb` is the Bundler manifest for working on the project. The `gemspec` directive includes the local gem and its runtime dependencies. Follow the layout used by `bake-modernize`: put the optional maintenance group before the test group, and separate related sets of tools with blank lines:
 
 ```ruby
 # frozen_string_literal: true
@@ -85,23 +85,29 @@ source "https://rubygems.org"
 
 gemspec
 
-group :test do
-	gem "sus"
-	gem "covered"
-	gem "bake-test"
-	gem "rubocop"
-	gem "rubocop-md"
-	gem "rubocop-socketry"
-end
-
 group :maintenance, optional: true do
 	gem "bake-modernize"
 	gem "bake-gem-github"
-	gem "utopia-project"
-	gem "decode"
+	gem "bake-releases"
+	
 	gem "socketry"
 	gem "agent-context"
 	gem "agent-skills"
+	
+	gem "decode"
+	
+	gem "utopia-project"
+end
+
+group :test do
+	gem "sus"
+	gem "covered"
+	
+	gem "rubocop"
+	gem "rubocop-md"
+	gem "rubocop-socketry"
+	
+	gem "bake-test"
 end
 ```
 
