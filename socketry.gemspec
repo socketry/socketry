@@ -15,6 +15,7 @@ Gem::Specification.new do |spec|
 	spec.metadata = {
 		"bug_tracker_uri" => "https://github.com/socketry/socketry/issues",
 		"changelog_uri" => "https://github.com/socketry/socketry/blob/main/releases.md",
+		"documentation_uri" => "https://socketry.github.io/socketry/",
 		"funding_uri" => "https://github.com/sponsors/ioquatix/",
 		"source_code_uri" => "https://github.com/socketry/socketry.git",
 	}

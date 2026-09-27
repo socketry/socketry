@@ -1,6 +1,6 @@
-# Configuration and Builder
+# Pattern: Configuration & Builder
 
-Use a mutable `Configuration` and a separate `Builder` for Ruby configuration DSLs in Socketry projects. This guide defines their responsibilities, construction, file loading, and explicit freezing.
+This guide explains how to implement Ruby configuration DSLs with a mutable `Configuration` and a separate `Builder`, including file loading and explicit freezing.
 
 ## Design
 
@@ -148,7 +148,3 @@ Multiple top-level files share one configuration. The example applies them in or
 Use this design for new configuration DSLs and when standardising existing ones. Preserve existing public names and entry points as compatibility wrappers where needed; an existing `Loader` can retain its name while the implementation moves to `Builder`. Keep runtime query methods and domain validation on the configuration.
 
 Verify that block and file factories return the configured object, that it can still be changed through the direct API, and that builders for multiple files update that same object. Explicit freezing should return that object, tolerate repeated calls, and prevent changes to its owned state through writers, collection readers, or attached builders, while leaving application objects untouched. For nested files, check relative resolution, stable builder roots, and exception source locations.
-
-## Established Examples
-
-This design follows [Falcon's configuration/loader separation from June 2019](https://github.com/socketry/falcon/commit/438e04eb295400f0481d72b610a2f9c9ea062746), carried into [Async::Service in February 2024](https://github.com/socketry/async-service/commit/d2d717b7605d364df3a853e8a810aeab2bc36078). Async::Service's [configuration](https://github.com/socketry/async-service/blob/f32af00e5c7a54c936023b96f180710e811d410e/lib/async/service/configuration.rb) and [loader](https://github.com/socketry/async-service/blob/f32af00e5c7a54c936023b96f180710e811d410e/lib/async/service/loader.rb) illustrate the mutable state and per-file loading scopes. This standard uses the name `Builder` for that DSL role.
