@@ -22,32 +22,40 @@ This gem provides reusable agent skills in the top-level `skills/` directory. Us
 
 ## Releases
 
-Releases use [`bake-gem-github`](https://github.com/socketry/bake-gem-github). With Ruby 3.3 or later, install maintenance dependencies before preparing a release:
+Please see the [release notes](releases.md) for changes.
+
+## Contributing
+
+We welcome contributions to this project.
+
+1.  Fork the repository.
+2.  Create your feature branch (`git checkout -b my-new-feature`).
+3.  Commit your changes (`git commit -am 'Add some feature.'`).
+4.  Push to the branch (`git push origin my-new-feature`).
+5.  Create a new pull request.
+
+### Running Tests
+
+To run the test suite:
 
 ``` bash
-bundle config set --local with maintenance
-bundle install
+$ bundle exec sus
 ```
 
-Add release notes under `Unreleased` in `releases.md`. From a clean, up-to-date `main`, prepare a release pull request:
+### Making Releases
+
+To make a new release:
 
 ``` bash
-bundle exec bake gem:github:release:patch # or minor or major
+$ bundle exec bake gem:github:release:patch # or minor or major
 ```
 
-You can also select **Run workflow** in GitHub's **Prepare release** workflow, or request the release with the GitHub CLI:
+See [bake-gem-github](https://github.com/socketry/bake-gem-github) for setup and release instructions.
 
-``` bash
-gh workflow run release-prepare.yaml --ref main -f bump=patch
-```
+### Developer Certificate of Origin
 
-The release hook versions the notes. Both commands open a release pull request. GitHub validates the release changes, then publishes the merged release to RubyGems using Trusted Publishing and creates the GitHub release.
+In order to protect users of this project, we require all contributors to comply with the [Developer Certificate of Origin](https://developercertificate.org/). This ensures that all contributions are properly licensed and attributed.
 
-Publishing uses the `rubygems` GitHub environment, restricted to `main`. For initial activation, register a RubyGems Trusted Publisher for `socketry/socketry`, workflow `release-publish.yaml`, environment `rubygems`. After merging the setup and confirming the `Gem build` and `Release validation` checks run, review and apply the repository policy:
+### Community Guidelines
 
-``` bash
-bundle exec bake gem:github:setup:plan
-bundle exec bake gem:github:setup:apply
-```
-
-The policy requires two PR approvals with administrator bypass. See the [release setup guide](https://socketry.github.io/bake-gem-github/guides/getting-started/index) for configuration and recovery.
+This project is best served by a collaborative and respectful environment. Treat each other professionally, respect differing viewpoints, and engage constructively. Harassment, discrimination, or harmful behavior is not tolerated. Communicate clearly, listen actively, and support one another. If any issues arise, please inform the project maintainers.
