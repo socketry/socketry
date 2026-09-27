@@ -1,2 +1,4 @@
-pattern-configuration-and-builder:
+getting-started:
   order: 1
+pattern-configuration-and-builder:
+  order: 2

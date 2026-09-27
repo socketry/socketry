@@ -9,6 +9,10 @@ metadata:
   funding_uri: https://github.com/sponsors/ioquatix/
   source_code_uri: https://github.com/socketry/socketry.git
 files:
+- path: getting-started.md
+  title: Getting Started
+  description: This guide explains how to use the `socketry` gem to support Socketry
+    development by installing shared guidance and agent skills into your local project.
 - path: pattern-configuration-and-builder.md
   title: 'Pattern: Configuration & Builder'
   description: This guide explains how to implement Ruby configuration DSLs with a

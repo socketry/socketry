@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+  - Add a Getting Started guide for installing Socketry's development context and agent skills locally.
   - Publish "Pattern: Configuration & Builder" as a documentation guide and generate its agent context as `pattern-configuration-and-builder.md`.
 
 ## v0.6.1
