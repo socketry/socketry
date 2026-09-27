@@ -1,6 +1,6 @@
-# Configuration and Builder
+# Pattern: Configuration & Builder
 
-Use a mutable `Configuration` and a separate `Builder` for Ruby configuration DSLs in Socketry projects. This guide defines their responsibilities, construction, file loading, and explicit freezing.
+This guide explains how to implement Ruby configuration DSLs with a mutable `Configuration` and a separate `Builder`, including file loading and explicit freezing.
 
 ## Design
 

@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Publish "Pattern: Configuration & Builder" as a documentation guide and generate its agent context as `pattern-configuration-and-builder.md`.
+
 ## v0.6.1
 
   - Distribute the mutable Configuration and Builder convention through `agent-context`.

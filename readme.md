@@ -4,11 +4,15 @@ Socketry project metadata, agent context, and skills.
 
 [![Development Status](https://github.com/socketry/socketry/workflows/Test/badge.svg)](https://github.com/socketry/socketry/actions?workflow=Test)
 
+## Usage
+
+Please see the [project documentation](https://socketry.github.io/socketry/) for more details.
+
+  - [Pattern: Configuration & Builder](https://socketry.github.io/socketry/guides/pattern-configuration-and-builder/index) - This guide explains how to implement Ruby configuration DSLs with a mutable `Configuration` and a separate `Builder`, including file loading and explicit freezing.
+
 ## Agent Context
 
-This gem distributes project conventions in the top-level `context/` directory:
-
-  - [Configuration and Builder](context/configuration.md) defines the mutable configuration and builder design for Ruby configuration DSLs.
+The guides are also distributed as agent context in the top-level `context/` directory.
 
 Projects that include `socketry` and [`agent-context`](https://github.com/socketry/agent-context) can install the context and update their `agents.md` index with:
 
@@ -22,7 +26,11 @@ This gem provides reusable agent skills in the top-level `skills/` directory. Us
 
 ## Releases
 
-Please see the [project releases](https://github.com/socketry/socketryreleases/index) for all releases.
+Please see the [project releases](https://socketry.github.io/socketry/releases/index) for all releases.
+
+### Unreleased
+
+  - Publish "Pattern: Configuration & Builder" as a documentation guide and generate its agent context as `pattern-configuration-and-builder.md`.
 
 ### v0.6.1
 
@@ -45,6 +53,14 @@ To run the test suite:
 
 ``` bash
 $ bundle exec sus
+```
+
+### Updating Documentation
+
+Edit the source guides in `guides/`, then regenerate the README and distributed agent context:
+
+``` bash
+bundle exec bake utopia:project:update
 ```
 
 ### Making Releases
