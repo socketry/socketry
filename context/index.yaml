@@ -13,6 +13,11 @@ files:
   title: Getting Started
   description: This guide explains how to use the `socketry` gem to support Socketry
     development by installing shared guidance and agent skills into your local project.
+- path: pattern-gem-structure.md
+  title: 'Pattern: Gem Structure'
+  description: This guide explains how to organise a Socketry gem, including its dependencies,
+    library code, tests, configuration, documentation, and files maintained by `bake
+    modernize`.
 - path: pattern-configuration-and-builder.md
   title: 'Pattern: Configuration & Builder'
   description: This guide explains how to implement Ruby configuration DSLs with a

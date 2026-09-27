@@ -10,6 +10,8 @@ Please see the [project documentation](https://socketry.github.io/socketry/) for
 
   - [Getting Started](https://socketry.github.io/socketry/guides/getting-started/index) - This guide explains how to use the `socketry` gem to support Socketry development by installing shared guidance and agent skills into your local project.
 
+  - [Pattern: Gem Structure](https://socketry.github.io/socketry/guides/pattern-gem-structure/index) - This guide explains how to organise a Socketry gem, including its dependencies, library code, tests, configuration, documentation, and files maintained by `bake modernize`.
+
   - [Pattern: Configuration & Builder](https://socketry.github.io/socketry/guides/pattern-configuration-and-builder/index) - This guide explains how to implement Ruby configuration DSLs with a mutable `Configuration` and a separate `Builder`, including file loading and explicit freezing.
 
 ## Agent Context
@@ -32,6 +34,7 @@ Please see the [project releases](https://socketry.github.io/socketry/releases/i
 
 ### Unreleased
 
+  - Document the standard Socketry gem layout and files maintained by `bake modernize` in "Pattern: Gem Structure".
   - Add a Getting Started guide for installing Socketry's development context and agent skills locally.
   - Publish "Pattern: Configuration & Builder" as a documentation guide and generate its agent context as `pattern-configuration-and-builder.md`.
 

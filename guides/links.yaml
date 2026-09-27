@@ -1,4 +1,6 @@
 getting-started:
   order: 1
-pattern-configuration-and-builder:
+pattern-gem-structure:
   order: 2
+pattern-configuration-and-builder:
+  order: 3
