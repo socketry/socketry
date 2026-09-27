@@ -126,14 +126,14 @@ Bundler writes the resolved dependencies to `gems.locked`. The standard `bake mo
 
 Put library code under `lib/`, following the Ruby namespace. For example, `async-service` uses `lib/async/service.rb`, `lib/async/service/`, and the namespace `Async::Service`. Keep each file's required dependencies explicit so supported entry points can be loaded directly.
 
-Define the version once in `lib/example/version.rb`:
+Define the version once in `lib/example/version.rb`. Start a new gem at `0.0.0` so the first version bump reflects the initial implementation:
 
 ```ruby
 # frozen_string_literal: true
 
 # @namespace
 module Example
-	VERSION = "0.1.0"
+	VERSION = "0.0.0"
 end
 ```
 
