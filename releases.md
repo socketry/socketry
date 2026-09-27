@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.6.2
 
   - Document the standard Socketry gem layout and files maintained by `bake modernize` in "Pattern: Gem Structure".
   - Add a Getting Started guide for installing Socketry's development context and agent skills locally.
