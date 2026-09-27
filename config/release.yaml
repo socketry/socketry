@@ -1,0 +1,11 @@
+---
+schema: 1
+repository: socketry/socketry
+branch: main
+checks:
+- Gem build
+- Release validation
+approvals: 2
+signing: false
+ruby: '3.4'
+environment: rubygems
