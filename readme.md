@@ -22,7 +22,12 @@ This gem provides reusable agent skills in the top-level `skills/` directory. Us
 
 ## Releases
 
-Please see the [release notes](releases.md) for changes.
+Please see the [project releases](https://github.com/socketry/socketryreleases/index) for all releases.
+
+### v0.6.1
+
+  - Distribute the mutable Configuration and Builder convention through `agent-context`.
+  - Prepare reviewed releases and publish through GitHub Actions using `bake-gem-github`.
 
 ## Contributing
 
