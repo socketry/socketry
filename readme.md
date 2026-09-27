@@ -35,7 +35,13 @@ Add release notes under `Unreleased` in `releases.md`. From a clean, up-to-date 
 bundle exec bake gem:github:release:patch # or minor or major
 ```
 
-The release hook versions the notes. GitHub validates the release changes, then publishes the merged release to RubyGems using Trusted Publishing.
+You can also select **Run workflow** in GitHub's **Prepare release** workflow, or request the release with the GitHub CLI:
+
+``` bash
+gh workflow run release-prepare.yaml --ref main -f bump=patch
+```
+
+The release hook versions the notes. Both commands open a release pull request. GitHub validates the release changes, then publishes the merged release to RubyGems using Trusted Publishing and creates the GitHub release.
 
 Publishing uses the `rubygems` GitHub environment, restricted to `main`. For initial activation, register a RubyGems Trusted Publisher for `socketry/socketry`, workflow `release-publish.yaml`, environment `rubygems`. After merging the setup and confirming the `Gem build` and `Release validation` checks run, review and apply the repository policy:
 
