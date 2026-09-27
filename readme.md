@@ -32,7 +32,7 @@ This gem provides reusable agent skills in the top-level `skills/` directory. Us
 
 Please see the [project releases](https://socketry.github.io/socketry/releases/index) for all releases.
 
-### Unreleased
+### v0.6.2
 
   - Document the standard Socketry gem layout and files maintained by `bake modernize` in "Pattern: Gem Structure".
   - Add a Getting Started guide for installing Socketry's development context and agent skills locally.
