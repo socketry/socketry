@@ -205,16 +205,19 @@ Keep release notes in `releases.md`, adding changes under `## Unreleased`. `lice
 
 ## Bake Tasks and Releases
 
-`bake.rb` contains tasks and hooks for maintaining this project. For a gem using `bake-releases` and `utopia-project`, the release hook keeps notes and generated documentation aligned with the version:
+`bake.rb` contains tasks and hooks for maintaining this project. For a gem using `bake-modernize`, `bake-releases`, and `utopia-project`, the version-bump hook refreshes copyrights before updating release notes and generated documentation:
 
 ```ruby
 # frozen_string_literal: true
 
 def after_gem_release_version_increment(version)
+	context["modernize:license"].call
 	context["releases:update"].call(version)
 	context["utopia:project:update"].call
 end
 ```
+
+`modernize:license` updates `license.md` and Ruby copyright headers from Git history. `bake-modernize` 0.62.0 and later include this call in the generated hook for both `bake-gem` and `bake-gem-github`. Existing projects can update `bake-modernize`, run `bundle exec bake modernize:releases`, and review the merged `bake.rb` to pick up the new call while preserving custom hooks.
 
 Tasks intended for other projects belong in namespaced files under `bake/` and must be included in `spec.files`. For example, `bake/example.rb` can provide `example:setup`. The root `bake.rb` is specific to the gem's own checkout.
 
