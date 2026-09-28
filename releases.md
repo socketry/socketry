@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.7.0
 
   - Make `agent-context` and `agent-skills` available as public dependencies.
 
