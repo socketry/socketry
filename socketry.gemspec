@@ -23,4 +23,7 @@ Gem::Specification.new do |spec|
 	spec.files = Dir.glob(["{context,lib,skills}/**/*", "*.md"], File::FNM_DOTMATCH, base: __dir__)
 	
 	spec.required_ruby_version = ">= 3.3"
+	
+	spec.add_dependency "agent-context"
+	spec.add_dependency "agent-skills"
 end
