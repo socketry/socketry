@@ -21,7 +21,10 @@ Use this skill when preparing commits or pull requests for Socketry projects.
 
 The pull request description should lead directly into a brief summary, followed by a detailed description of the problem and solution.
 
-Do not add a `Types of Changes` section to the pull request description. Use GitHub issue type metadata for classification instead.
+Do not add a `Types of Changes` section to the pull request description. Issue
+types classify GitHub issues; do not assign an issue type to a pull request or
+include issue type metadata in its description. If a related issue needs
+classification, set the type on that issue.
 
 Use this structure, replacing the placeholder text with project-specific content:
 
@@ -45,9 +48,10 @@ If downstream dependencies are directly affected by the change, add them as exte
 
 If the change is user visible, add a brief release note following the `bake-releases` documentation.
 
-## Issue Type
+## Issue Types
 
-Set the GitHub issue type correctly when creating or updating a pull request:
+Issue types apply to GitHub issues. Do not try to set an issue type when
+creating or updating a pull request. For a linked issue, use its issue type:
 
 - Use `Bug` for defect fixes and regressions.
 - Use `Feature` for new user-facing capabilities.

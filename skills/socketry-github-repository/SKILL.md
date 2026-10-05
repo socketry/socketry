@@ -46,13 +46,15 @@ When creating a new repository, configure the repository so it is immediately us
 
 ## Issue Types
 
-Use GitHub issue types to classify work:
+Use GitHub issue types to classify issues:
 
 - Use `Bug` for defect fixes and regressions.
 - Use `Feature` for new user-facing capabilities.
 - Use `Task` for maintenance, refactoring, documentation, tests, release work, and internal improvements.
 
-Do not duplicate issue type information in issue or pull request body sections when GitHub metadata is available.
+Do not duplicate issue type information in issue body sections when GitHub
+metadata is available. Issue types apply to issues; do not assign one to a pull
+request or include issue type information in its body.
 
 ## Labels
 
