@@ -22,11 +22,38 @@ Keep task and command adapters small: translate arguments, call a library operat
 
 ## Readable Control Flow
 
-Make the main method read as a sequence of meaningful actions. Within a method, separate setup, validation, transformation, and effects with blank lines. Expand long argument lists, nested ternaries, and compound predicates when intermediate names make their meaning easier to follow.
+Make a multi-step method read as a sequence of meaningful actions. Introduce each logical phase with a short comment explaining the behavior it implements. Keep the related statements together under that comment, and separate phases with blank lines. A phase can contain several calculations, assignments, or branches that readers need to understand together.
 
-Extract a private method when it gives a cohesive operation a useful name or separates a distinct responsibility. Keep closely related steps together when readers need them to understand the operation. Prefer a few focused methods and existing objects; add an abstraction when it has concrete callers or owns a distinct invariant.
+Use method documentation to explain the overall operation and its contract. Within the method, comments explain what each phase accomplishes, how it contributes to the operation, and any relevant ordering constraints or reasoning. Write comments introducing the following code with a trailing colon.
 
-Use comments to explain ordering constraints, ownership, and the reasons behind decisions. Method names should explain the action, and local names should explain the values being passed between steps.
+For example, this simplified scheduler accounting method keeps measurement and accumulation in readable groups:
+
+```ruby
+# Record the busy and idle time for this event loop iteration.
+def record_load(start_time)
+	# Measure the elapsed time and the portion spent waiting for events:
+	elapsed = Async::Clock.now - start_time
+	idle = @selector.idle_duration
+	busy = elapsed - idle
+	
+	# Accumulate both durations for subsequent load reporting:
+	@busy_time += busy
+	@idle_time += idle
+end
+```
+
+A method implementing a single step can usually be explained by its method documentation. This buffered-body operation is complete with its method comment:
+
+```ruby
+# Write a chunk to the buffered body.
+def write(chunk)
+	@chunks << chunk
+end
+```
+
+Choose comment granularity by behavior: explain the purpose of a group of statements in domain terms. Method names explain the action, and local names explain the values passed between steps. Add an internal comment to a small method when it explains a detail beyond the method's contract.
+
+Keep a cohesive sequence together when its shared state and ordering are easiest to follow locally. Extract a private method when it separates a distinct responsibility or gives an independently meaningful operation a useful name. Expand long argument lists, nested ternaries, and compound predicates when intermediate names improve readability. Prefer a few focused methods and existing objects; add an abstraction when it has concrete callers or owns a distinct invariant.
 
 ## Effects and Failure Boundaries
 
