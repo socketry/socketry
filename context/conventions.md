@@ -1,4 +1,4 @@
-# Socketry Ruby Conventions
+# Conventions
 
 This guide explains how to structure Ruby code with clear responsibilities, explicit operations, and readable control flow across Socketry projects.
 
