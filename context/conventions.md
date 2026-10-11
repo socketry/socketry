@@ -2,11 +2,13 @@
 
 This guide explains how to structure Ruby code with clear responsibilities, explicit operations, and readable control flow across Socketry projects.
 
+Choose the simplest structure that makes the behavior, state, and responsibilities easy to follow. Use this principle to guide tradeoffs when applying these conventions.
+
 ## Construction and Operations
 
 Keep `#initialize` limited to assigning supplied state, creating simple owned values, and cheap normalization. Callers should be able to construct an object without discovering dependencies, reading files, parsing documents, launching processes, or changing external state.
 
-Give preparation and execution explicit entry points. Use names such as `.load`, `.parse`, `.discover`, `.prepare`, and `#install` to describe the work. A `.load(path)` factory can read a file, pass its contents to `.parse`, and construct an object from the parsed state. A prepared update can expose `#apply` and `#restore`. Introduce those phases when they give callers a useful boundary.
+Give preparation and execution explicit entry points. Use names such as `.load`, `.parse`, `.discover`, `.prepare`, and `#install` to describe the work. A `.load(path)` factory can read a file, pass its contents to `.parse`, and construct an object from the parsed state. Introduce phases when they give callers a useful boundary.
 
 Keep derived values with the object that owns their inputs. Decide whether to compute them during an explicit preparation operation or when requested, based on cost and lifecycle. Make expensive work and external effects visible in the calling code.
 
@@ -57,9 +59,9 @@ Keep a cohesive sequence together when its shared state and ordering are easiest
 
 ## Effects and Failure Boundaries
 
-Validate inputs before changing externally visible state. When replacing generated files or directories, prepare the new contents and use a small, explicit replacement operation. Keep cleanup next to the effect it protects and document the scope that is restored on failure.
+Validate inputs before changing externally visible state. For generated files that can be recreated by rerunning the operation, prefer a direct `File.write`. Keep cleanup next to the effect it protects.
 
-Distinguish missing optional input from invalid or unreadable input. Report failures with the relevant source or destination. Add recovery machinery in proportion to the actual operation and its documented guarantees; use the simplest design that meets them.
+Distinguish missing optional input from invalid or unreadable input. Report failures with the relevant source or destination. Match error handling and recovery to the operation's actual requirements and keep them easy to follow.
 
 ## Alignment Across Implementations
 
@@ -67,7 +69,7 @@ When Ruby and Rust implement the same feature, agree on the domain model, respon
 
 Use Ruby objects, modules, and enumeration idiomatically. Align the meaning of construction, parsing, discovery, and installation across languages while allowing their signatures and error mechanisms to fit each ecosystem.
 
-Keep portable formats and behavioral rules in a shared specification. Use common fixtures to verify the contract, including representative invalid input and failure boundaries. Byte-for-byte comparisons are useful where exact preservation is part of the contract; semantic checks suit outputs whose formatting may vary.
+Keep portable formats and behavioral rules in a shared specification. Test each implementation against the agreed behavior. Use shared fixtures where they make a common format or rule easier to verify. Compare exact bytes when formatting or preservation is part of the contract; otherwise compare meaning.
 
 ## Architectural Changes
 
