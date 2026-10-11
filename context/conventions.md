@@ -59,7 +59,9 @@ Keep a cohesive sequence together when its shared state and ordering are easiest
 
 ## Effects and Failure Boundaries
 
-Validate inputs before changing externally visible state. For generated files that can be recreated by rerunning the operation, prefer a direct `File.write`. Keep cleanup next to the effect it protects.
+Validate data as part of loading or parsing it, and use that validated representation when applying changes. Prefer straightforward operations with explicit effects and simple error handling.
+
+A sequence such as `Foo.load(path).write(path)` is appropriate for regenerable local state. For generated files that can be recreated by rerunning the operation, prefer a direct `File.write`. Completed steps can remain in place when a later step fails; report the failure so the caller can rerun the operation. Keep cleanup next to the effect it protects.
 
 Distinguish missing optional input from invalid or unreadable input. Report failures with the relevant source or destination. Match error handling and recovery to the operation's actual requirements and keep them easy to follow.
 
