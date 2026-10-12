@@ -12,6 +12,16 @@ Give preparation and execution explicit entry points. Use names such as `.load`,
 
 Keep derived values with the object that owns their inputs. Decide whether to compute them during an explicit preparation operation or when requested, based on cost and lifecycle. Make expensive work and external effects visible in the calling code.
 
+## Inputs and API Contracts
+
+Use positional arguments for required inputs. Use keyword arguments for options or when naming an argument materially clarifies the call. For example, `.parse(content, path)` makes a small parsing API easy to follow.
+
+Work directly with the expected data structure. Supply simple defaults for absent optional values, and keep any necessary shape validation at the parsing boundary. Accessors should expose the stored value, and defaults should represent expected absence. Keep malformed data distinguishable from missing input.
+
+Keep predicates focused on the question they answer. For extensible metadata, recognize the values the consumer understands and use the format's defined fallback for unfamiliar values. This lets existing consumers continue processing data when providers introduce new types.
+
+Use the format's canonical names. Add aliases and accepted forms when a concrete requirement calls for them, keeping the vocabulary small and consistent.
+
 ## Responsibility and Dependencies
 
 Choose objects around domain concepts and ownership of state. Give each parsing rule, validation rule, and file format one owner. Consumers such as renderers and installers should use that shared interpretation.
