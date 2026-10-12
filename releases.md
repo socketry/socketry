@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Publish Ruby architecture conventions covering lightweight construction, explicit operations, readable control flow, and alignment with Rust implementations.
+
 ## v0.7.0
 
   - Make `agent-context` and `agent-skills` available as public dependencies.

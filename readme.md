@@ -8,6 +8,8 @@ Socketry project metadata, agent context, and skills.
 
 Please see the [project documentation](https://socketry.github.io/socketry/) for more details.
 
+  - [Conventions](https://socketry.github.io/socketry/guides/conventions/index) - This guide explains how to structure Ruby code with clear responsibilities, explicit operations, and readable control flow across Socketry projects.
+
   - [Getting Started](https://socketry.github.io/socketry/guides/getting-started/index) - This guide explains how to use the `socketry` gem to support Socketry development by installing shared guidance and agent skills into your local project.
 
   - [Pattern: Gem Structure](https://socketry.github.io/socketry/guides/pattern-gem-structure/index) - This guide explains how to organise a Socketry gem, including its dependencies, library code, tests, configuration, documentation, and files maintained by `bake modernize`.

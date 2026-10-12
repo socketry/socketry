@@ -23,3 +23,7 @@ files:
   description: This guide explains how to implement Ruby configuration DSLs with a
     mutable `Configuration` and a separate `Builder`, including file loading and explicit
     freezing.
+- path: conventions.md
+  title: Conventions
+  description: This guide explains how to structure Ruby code with clear responsibilities,
+    explicit operations, and readable control flow across Socketry projects.
